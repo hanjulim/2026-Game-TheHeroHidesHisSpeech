@@ -1,0 +1,310 @@
+  :root {
+    --bg: #0a0a0f;
+    --panel-bg: rgba(10,10,20,0.92);
+    --glass: rgba(255,255,255,0.05);
+    --glass-border: rgba(255,255,255,0.12);
+    --accent: #ffd700;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'Press Start 2P', monospace;
+    color: #fff;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    user-select: none;
+  }
+  /* CRT scanlines */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.13) 2px, rgba(0,0,0,0.13) 4px
+    );
+    pointer-events: none;
+    z-index: 10000;
+  }
+  /* CRT vignette */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%);
+    pointer-events: none;
+    z-index: 9999;
+  }
+  #app {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+  }
+  #left-panel {
+    width: 65%;
+    height: 100%;
+    position: relative;
+    flex-shrink: 0;
+  }
+  #game-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+  }
+  #right-panel {
+    width: 35%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel-bg);
+    border-left: 2px solid var(--glass-border);
+    position: relative;
+  }
+  #webcam-section {
+    height: 45%;
+    position: relative;
+    border-bottom: 2px solid var(--glass-border);
+    background: #000;
+    overflow: hidden;
+  }
+  #webcam {
+    position: absolute;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transform: scaleX(-1);
+  }
+  #landmark-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    transform: scaleX(-1);
+  }
+  #webcam-label {
+    position: absolute;
+    top: 6px; left: 8px;
+    font-size: 7px;
+    color: rgba(255,255,255,0.5);
+    z-index: 2;
+  }
+  #gesture-section {
+    height: 55%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 6px 6px;
+    gap: 6px;
+    overflow: hidden;
+  }
+  #gesture-label {
+    font-size: 8px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+  #target-gesture-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  #target-canvas {
+    image-rendering: pixelated;
+    transition: transform 0.05s ease;
+  }
+  #gesture-name-text {
+    font-size: 9px;
+    color: #ffd700;
+    text-align: center;
+    min-height: 14px;
+    text-shadow: 0 0 8px #ffd700;
+  }
+  #upcoming-wrap {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  #upcoming-label {
+    font-size: 6px;
+    color: rgba(255,255,255,0.4);
+  }
+  .upcoming-canvas {
+    image-rendering: pixelated;
+    opacity: 0.6;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 2px;
+  }
+  #beat-bar-wrap {
+    width: 100%;
+    flex-shrink: 0;
+  }
+  #beat-bar-label {
+    font-size: 6px;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-bottom: 3px;
+  }
+  #beat-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  #beat-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4ade80, #ffd700, #f97316);
+    border-radius: 5px;
+    transition: none;
+  }
+  #gesture-detect-display {
+    font-size: 8px;
+    color: #4ade80;
+    text-align: center;
+    min-height: 14px;
+    flex-shrink: 0;
+  }
+  #keyboard-hint {
+    font-size: 6px;
+    color: rgba(255,255,255,0.25);
+    text-align: center;
+    line-height: 1.6;
+    flex-shrink: 0;
+  }
+  /* HUD overlay on left panel */
+  #hud-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    pointer-events: none;
+    z-index: 5;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  #hp-display { font-size: 10px; line-height: 1.8; }
+  #score-display { font-size: 9px; text-align: right; color: #ffd700; }
+  #combo-display {
+    position: absolute;
+    top: 60px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #f97316;
+    text-shadow: 0 0 20px #f97316;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  #feedback-display {
+    position: absolute;
+    top: 45%; left: 30%;
+    transform: translate(-50%,-50%);
+    font-size: 18px;
+    text-shadow: 0 0 20px currentColor;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 6;
+    transition: opacity 0.4s;
+  }
+  #stage-title-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(0,0,0,0.7);
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #stage-title-overlay.visible { opacity: 1; pointer-events: all; }
+  #stage-title-text { font-size: 18px; color: #ffd700; text-align: center; text-shadow: 0 0 30px #ffd700; }
+  #stage-narrative { font-size: 13px; color: #fff; text-align: center; max-width: 80%; line-height: 2.2; }
+  #stage-start-hint { font-size: 11px; color: rgba(255,255,255,0.5); animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  /* Cutscene dialog */
+  #dialog-box {
+    position: absolute;
+    bottom: 20px; left: 20px; right: 20px;
+    background: rgba(0,0,10,0.93);
+    border: 3px solid #ffd700;
+    border-radius: 4px;
+    padding: 14px 18px 14px 14px;
+    z-index: 30;
+    display: none;
+    min-height: 120px;
+  }
+  #dialog-box.visible { display: block; }
+  #dialog-speaker {
+    font-size: 13px;
+    color: #ffd700;
+    margin-bottom: 10px;
+  }
+  #dialog-text {
+    font-size: 13px;
+    color: #fff;
+    line-height: 2.2;
+    min-height: 52px;
+  }
+  #dialog-continue {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    text-align: right;
+    margin-top: 6px;
+    animation: blink 0.7s infinite;
+  }
+  #dialog-gesture-hint {
+    font-size: 12px;
+    color: #4ade80;
+    text-align: center;
+    margin-top: 6px;
+    animation: blink 0.8s infinite;
+  }
+  /* Stage clear */
+  #stage-clear-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(0,0,0,0.82);
+    z-index: 25;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #stage-clear-overlay.visible { opacity: 1; pointer-events: all; }
+  #clear-title { font-size: 20px; color: #ffd700; text-shadow: 0 0 40px #ffd700; }
+  #clear-skill { font-size: 12px; color: #4ade80; text-align: center; line-height: 2.2; }
+  #clear-after { font-size: 12px; color: #fff; text-align: center; max-width: 80%; line-height: 2.2; }
+  #clear-score { font-size: 12px; color: #ffd700; }
+  #clear-hint { font-size: 10px; color: rgba(255,255,255,0.4); animation: blink 1s infinite; }
+  /* Game over */
+  #gameover-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(0,0,0,0.88);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #gameover-overlay.visible { opacity: 1; pointer-events: all; }
+  #gameover-title { font-size: 24px; color: #ef4444; text-shadow: 0 0 40px #ef4444; }
+  #gameover-hint { font-size: 9px; color: rgba(255,255,255,0.4); animation: blink 1s infinite; }

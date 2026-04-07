@@ -32,6 +32,12 @@
 - [ ] 구조 분리 단계에서는 동작 변경을 최소화한다.
 - [ ] 기능 추가는 구조 분리가 안정된 뒤에 진행한다.
 
+실행 방법
+
+- [ ] `ES module` 구조이므로 `file://` 직접 실행 대신 Live Server 또는 로컬 서버로 연다.
+- [ ] 기본 실행 주소 예시: `http://127.0.0.1:5500/` 또는 `http://localhost:8000/`
+- [ ] 브라우저 실행 확인 항목은 반드시 서버 환경 기준으로 체크한다.
+
 ## Phase 0. 작업 준비
 
 - [x] `js/` 폴더 생성
@@ -59,19 +65,32 @@ Phase 0 기준 상태 메모
 
 ## Phase 1. 스타일 분리
 
-- [ ] `styles.css` 생성
-- [ ] `index.html`의 `<style>` 내용을 `styles.css`로 이동
-- [ ] `index.html`에 stylesheet 링크 연결
+- [x] `styles.css` 생성
+- [x] `index.html`의 `<style>` 내용을 `styles.css`로 이동
+- [x] `index.html`에 stylesheet 링크 연결
 - [ ] 스타일 분리 후 화면 레이아웃이 기존과 같은지 확인
+
+Phase 1 메모
+
+- [x] `index.html`에서 `<style>` 블록 제거 확인
+- [x] `index.html`에 `styles.css` 링크 연결 확인
+- [ ] 브라우저 실기동으로 레이아웃 최종 확인
 
 ## Phase 2. 전체 JS 분리
 
-- [ ] `js/` 폴더 생성
-- [ ] `js/main.js` 생성
-- [ ] `index.html`의 inline script 전체를 우선 `js/main.js`로 이동
-- [ ] `index.html`에서 inline script를 제거하고 `<script type="module">` 연결
+- [x] `js/` 폴더 생성
+- [x] `js/main.js` 생성
+- [x] `index.html`의 inline script 전체를 우선 `js/main.js`로 이동
+- [x] `index.html`에서 inline script를 제거하고 `<script type="module">` 연결
 - [ ] JS를 한 파일로 옮긴 뒤에도 기존 게임이 동일하게 동작하는지 확인
-- [ ] 이 단계에서는 로직 분해 없이 "위치만 이동"하는 것을 원칙으로 한다
+- [x] 이 단계에서는 로직 분해 없이 "위치만 이동"하는 것을 원칙으로 한다
+
+Phase 2 메모
+
+- [x] `index.html`의 일반 inline `<script>` 블록 제거 확인
+- [x] `index.html`에 `type="module"`로 `js/main.js` 연결 확인
+- [x] inline `onclick` 유지용으로 `window.retryBattle`, `window.restartGame` 노출
+- [ ] 브라우저 실기동으로 모듈 로딩/게임 동작 최종 확인
 
 ## Phase 3. 데이터와 상수 분리
 
