@@ -227,12 +227,19 @@ Phase 10 메모
 
 ## Phase 11. 공통 유틸과 진입점 정리
 
-- [ ] `js/utils.js` 생성
-- [ ] 공통으로 재사용되는 작은 헬퍼만 이동
-- [ ] DOM 참조 수집과 초기화 코드 정리
-- [ ] 모듈 초기화 순서 정리
-- [ ] `requestAnimationFrame(gameLoop)` 시작점을 `main.js`로 이동
-- [ ] `main.js`가 진입점만 담당하고 나머지 모듈을 조립하도록 정리
+- [x] `js/utils.js` 생성
+- [x] 공통으로 재사용되는 작은 헬퍼만 이동
+- [x] DOM 참조 수집과 초기화 코드 정리
+- [x] 모듈 초기화 순서 정리
+- [x] `requestAnimationFrame(gameLoop)` 시작점을 `main.js`로 이동
+- [x] `main.js`가 진입점만 담당하고 나머지 모듈을 조립하도록 정리
+
+Phase 11 메모
+
+- [x] `getById()`, `resizeCanvasToElement()`를 `js/utils.js`로 분리
+- [x] `main.js`의 DOM 참조 수집을 초기 구간에 모아 진입점 역할을 명확히 함
+- [x] `main.js`는 상태/DOM/모듈 조립과 루프 시작만 담당하도록 정리
+- [ ] 브라우저 실기동으로 초기화 순서와 런타임 오류 최종 확인
 
 ## Phase 12. 리팩터링 검증
 

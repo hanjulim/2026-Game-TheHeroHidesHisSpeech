@@ -21,58 +21,56 @@ import {
   resetBattleState,
   resetRunState,
 } from './state.js';
+import { getById, resizeCanvasToElement } from './utils.js';
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const PIXEL = 4;
 
 // ─── GAME STATE ──────────────────────────────────────────────────────────────
 const GS = createInitialState();
 
-// ─── CANVAS SETUP ─────────────────────────────────────────────────────────────
-const canvas = document.getElementById('game-canvas');
+const canvas = getById('game-canvas');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-const landmarkCanvas = document.getElementById('landmark-canvas');
+const landmarkCanvas = getById('landmark-canvas');
 const landmarkCtx = landmarkCanvas.getContext('2d');
 
-const targetCanvas = document.getElementById('target-canvas');
+const targetCanvas = getById('target-canvas');
 const targetCtx = targetCanvas.getContext('2d');
 targetCtx.imageSmoothingEnabled = false;
-const gestureDetectDisplay = document.getElementById('gesture-detect-display');
-const hpDisplay = document.getElementById('hp-display');
-const scoreDisplay = document.getElementById('score-display');
-const comboDisplay = document.getElementById('combo-display');
-const feedbackDisplay = document.getElementById('feedback-display');
-const gestureNameText = document.getElementById('gesture-name-text');
-const beatBarFill = document.getElementById('beat-bar-fill');
-const upcomingCanvases = ['up1', 'up2', 'up3'].map(id => document.getElementById(id));
-const dialogBox = document.getElementById('dialog-box');
-const dialogSpeaker = document.getElementById('dialog-speaker');
-const dialogText = document.getElementById('dialog-text');
-const dialogGestureHint = document.getElementById('dialog-gesture-hint');
-const dialogContinue = document.getElementById('dialog-continue');
-const stageTitleOverlay = document.getElementById('stage-title-overlay');
-const stageTitleText = document.getElementById('stage-title-text');
-const stageNarrative = document.getElementById('stage-narrative');
-const stageClearOverlay = document.getElementById('stage-clear-overlay');
-const clearSkill = document.getElementById('clear-skill');
-const clearAfter = document.getElementById('clear-after');
-const clearScore = document.getElementById('clear-score');
-const gameoverOverlay = document.getElementById('gameover-overlay');
+const leftPanel = getById('left-panel');
+const webcamSection = getById('webcam-section');
+const webcam = getById('webcam');
+const gestureDetectDisplay = getById('gesture-detect-display');
+const hpDisplay = getById('hp-display');
+const scoreDisplay = getById('score-display');
+const comboDisplay = getById('combo-display');
+const feedbackDisplay = getById('feedback-display');
+const gestureNameText = getById('gesture-name-text');
+const beatBarFill = getById('beat-bar-fill');
+const upcomingCanvases = ['up1', 'up2', 'up3'].map(getById);
+const dialogBox = getById('dialog-box');
+const dialogSpeaker = getById('dialog-speaker');
+const dialogText = getById('dialog-text');
+const dialogGestureHint = getById('dialog-gesture-hint');
+const dialogContinue = getById('dialog-continue');
+const stageTitleOverlay = getById('stage-title-overlay');
+const stageTitleText = getById('stage-title-text');
+const stageNarrative = getById('stage-narrative');
+const stageClearOverlay = getById('stage-clear-overlay');
+const clearSkill = getById('clear-skill');
+const clearAfter = getById('clear-after');
+const clearScore = getById('clear-score');
+const gameoverOverlay = getById('gameover-overlay');
 
 function resizeCanvas() {
-  const lp = document.getElementById('left-panel');
-  canvas.width = lp.clientWidth;
-  canvas.height = lp.clientHeight;
-  ctx.imageSmoothingEnabled = false;
+  resizeCanvasToElement(canvas, leftPanel, ctx);
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 function resizeLandmark() {
-  const ws = document.getElementById('webcam-section');
-  landmarkCanvas.width = ws.clientWidth;
-  landmarkCanvas.height = ws.clientHeight;
+  resizeCanvasToElement(landmarkCanvas, webcamSection);
 }
 window.addEventListener('resize', resizeLandmark);
 resizeLandmark();
@@ -159,9 +157,9 @@ function getActiveGesture() {
 
 function restartGame() {
   Object.assign(GS, resetRunState());
-  document.getElementById('gameover-overlay').classList.remove('visible');
-  document.getElementById('stage-clear-overlay').classList.remove('visible');
-  document.getElementById('stage-title-overlay').classList.remove('visible');
+  gameoverOverlay.classList.remove('visible');
+  stageClearOverlay.classList.remove('visible');
+  stageTitleOverlay.classList.remove('visible');
   inputController.reset();
   cutsceneController.startCutscene('intro');
 }
@@ -220,7 +218,7 @@ function init() {
   // Show loading briefly, then start intro
   GS.phase = 'loading';
   initMediapipe({
-    videoEl: document.getElementById('webcam'),
+    videoEl: webcam,
     landmarkCtx,
     landmarkCanvas,
     onGestureChange: gesture => {
