@@ -9,7 +9,7 @@
 ├─ js/
 │  ├─ main.js
 │  ├─ state.js
-│  ├─ stages.js
+│  ├─ data.js
 │  ├─ input.js
 │  ├─ mediapipe.js
 │  ├─ render.js
@@ -94,12 +94,18 @@ Phase 2 메모
 
 ## Phase 3. 데이터와 상수 분리
 
-- [ ] `js/stages.js` 생성
-- [ ] `STAGES` 데이터 이동
-- [ ] `CUTSCENE_INTRO`, `CUTSCENE_BOSS_DEFEAT`, `CUTSCENE_ENDING` 이동
-- [ ] `GESTURE_NAMES`, `GESTURE_COLORS`, `GESTURE_KEYS` 이동
-- [ ] 필요한 export/import 연결
+- [x] `js/data.js` 생성
+- [x] `STAGES` 데이터 이동
+- [x] `CUTSCENE_INTRO`, `CUTSCENE_BOSS_DEFEAT`, `CUTSCENE_ENDING` 이동
+- [x] `GESTURE_NAMES`, `GESTURE_COLORS`, `GESTURE_KEYS` 이동
+- [x] 필요한 export/import 연결
 - [ ] 데이터 분리 후 컷신, 스테이지 표기, 입력명이 정상인지 확인
+
+Phase 3 메모
+
+- [x] 데이터와 상수를 `js/data.js`로 분리
+- [x] `js/main.js`에서 `import`로 참조하도록 연결
+- [ ] 브라우저 실기동으로 컷신, 스테이지 정보, 입력 라벨 최종 확인
 
 ## Phase 4. 스프라이트와 아트 코드 분리
 
