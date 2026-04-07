@@ -9,6 +9,7 @@ import {
   GESTURE_NAMES,
   STAGES,
 } from './data.js';
+import { createBattleController } from './battle.js';
 import { createCutsceneController } from './cutscene.js';
 import { createInputController } from './input.js';
 import { initMediapipe } from './mediapipe.js';
@@ -57,6 +58,7 @@ const stageClearOverlay = document.getElementById('stage-clear-overlay');
 const clearSkill = document.getElementById('clear-skill');
 const clearAfter = document.getElementById('clear-after');
 const clearScore = document.getElementById('clear-score');
+const gameoverOverlay = document.getElementById('gameover-overlay');
 
 function resizeCanvas() {
   const lp = document.getElementById('left-panel');
@@ -97,6 +99,7 @@ const renderer = createRenderer({
     upcomingCanvases,
   },
 });
+let battleController;
 const cutsceneController = createCutsceneController({
   state: GS,
   stages: STAGES,
@@ -120,7 +123,7 @@ const cutsceneController = createCutsceneController({
     clearAfter,
     clearScore,
   },
-  onStartBattle: startBattle,
+  onStartBattle: () => battleController.startBattle(),
   drawTargetGesture: renderer.drawTargetGesture,
   getActiveGesture,
 });
@@ -130,23 +133,28 @@ const inputController = createInputController({
   gestureKeys: GESTURE_KEYS,
   gestureNames: GESTURE_NAMES,
   gestureColors: GESTURE_COLORS,
-  onRetryBattle: retryBattle,
+  onRetryBattle: () => battleController.retryBattle(),
   onRestartGame: restartGame,
   onAdvanceInput: () => cutsceneController.handleAdvanceInput(),
+});
+battleController = createBattleController({
+  state: GS,
+  stages: STAGES,
+  createBattleStartState,
+  resetBattleState,
+  getActiveGesture,
+  elements: {
+    gameoverOverlay,
+    stageTitleOverlay,
+  },
+  onInputReset: () => inputController.reset(),
+  onShowStageClear: () => cutsceneController.showStageClear(),
 });
 
 inputController.bind();
 
 function getActiveGesture() {
   return inputController.getActiveGesture();
-}
-
-// ─── GAME FLOW ────────────────────────────────────────────────────────────────
-function retryBattle() {
-  if (!GS.gameOverVisible) return;
-  document.getElementById('gameover-overlay').classList.remove('visible');
-  Object.assign(GS, resetBattleState(GS, STAGES[GS.stageIdx], performance.now()));
-  inputController.reset();
 }
 
 function restartGame() {
@@ -156,95 +164,6 @@ function restartGame() {
   document.getElementById('stage-title-overlay').classList.remove('visible');
   inputController.reset();
   cutsceneController.startCutscene('intro');
-}
-
-function startBattle() {
-  document.getElementById('stage-title-overlay').classList.remove('visible');
-  const stage = STAGES[GS.stageIdx];
-  Object.assign(GS, createBattleStartState(stage, performance.now()));
-}
-
-function showGameOver() {
-  GS.phase = 'gameover';
-  GS.gameOverVisible = true;
-  document.getElementById('gameover-overlay').classList.add('visible');
-}
-
-function showFeedback(text, color, duration=700) {
-  GS.feedbackText = text;
-  GS.feedbackColor = color;
-  GS.feedbackTimer = duration;
-}
-
-// ─── BEAT LOGIC ───────────────────────────────────────────────────────────────
-function processBeat(timestamp) {
-  const stage = STAGES[GS.stageIdx];
-  const seq = stage.sequence;
-  if (GS.beatIdx >= seq.length) {
-    // All beats done
-    if (GS.enemyHp > 0) {
-      // Enemy attacks remaining HP
-      GS.heroHp = Math.max(0, GS.heroHp - 1);
-      if (GS.heroHp <= 0) { showGameOver(); return; }
-    }
-    cutsceneController.showStageClear();
-    return;
-  }
-
-  const expected = seq[GS.beatIdx];
-  const actual = getActiveGesture();
-
-  // Flash
-  GS.beatPulse = 1.0;
-  GS.flashAlpha = 0.15;
-
-  if (actual === expected) {
-    // HIT
-    GS.combo++;
-    const multiplier = Math.min(GS.combo, 5);
-    GS.score += 100 * multiplier;
-    GS.enemyHp--;
-    // Hero attack anim
-    GS.heroAnimState = 'attack';
-    GS.heroAnimTimer = 300;
-    GS.heroOffsetX = 30;
-    setTimeout(()=>{ GS.heroOffsetX=0; }, 150);
-    // Enemy hurt
-    GS.enemyFlash = true;
-    GS.enemyOffsetX = -15;
-    setTimeout(()=>{ GS.enemyFlash=false; GS.enemyOffsetX=0; }, 300);
-    const isCrit = GS.combo >= 5;
-    showFeedback(isCrit ? '⚡ PERFECT!!' : GS.combo>=3 ? '🔥 GOOD!' : 'HIT!', isCrit?'#ffd700':'#4ade80');
-    if (GS.enemyHp <= 0) {
-      setTimeout(() => cutsceneController.showStageClear(), 600);
-      GS.phase = 'battle_ending';
-      return;
-    }
-  } else {
-    // MISS
-    GS.combo = 0;
-    GS.heroHp--;
-    GS.heroAnimState = 'hurt';
-    GS.heroAnimTimer = 400;
-    // Shake
-    let shakes = 0;
-    const shakeInt = setInterval(()=>{
-      GS.heroOffsetX = shakes%2===0 ? -8 : 8;
-      shakes++;
-      if(shakes>6){clearInterval(shakeInt); GS.heroOffsetX=0; GS.heroAnimState='idle';}
-    },60);
-    // Enemy attack
-    GS.enemyOffsetX = 20;
-    setTimeout(()=>{ GS.enemyOffsetX=0; }, 300);
-    showFeedback('MISS!', '#ef4444');
-    if (GS.heroHp <= 0) {
-      setTimeout(showGameOver, 600);
-      GS.phase = 'battle_ending';
-      return;
-    }
-  }
-
-  GS.beatIdx++;
 }
 
 // ─── MAIN LOOP ────────────────────────────────────────────────────────────────
@@ -288,7 +207,7 @@ function gameLoop(timestamp) {
 
     if (elapsed >= GS.beatInterval) {
       GS.lastBeatTime = timestamp;
-      processBeat(timestamp);
+      battleController.processBeat();
     }
   }
 
@@ -315,7 +234,7 @@ function init() {
   requestAnimationFrame(gameLoop);
 }
 
-window.retryBattle = retryBattle;
+window.retryBattle = () => battleController.retryBattle();
 window.restartGame = restartGame;
 
 init();

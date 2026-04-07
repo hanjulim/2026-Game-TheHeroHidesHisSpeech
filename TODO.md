@@ -210,13 +210,20 @@ Phase 9 메모
 
 ## Phase 10. 전투 로직 분리
 
-- [ ] `js/battle.js` 생성
-- [ ] `startBattle()` 이동
-- [ ] `processBeat()` 이동
-- [ ] `retryBattle()` 이동
-- [ ] `showGameOver()` 이동
-- [ ] 점수, 콤보, HP, 적 HP 계산 책임 정리
+- [x] `js/battle.js` 생성
+- [x] `startBattle()` 이동
+- [x] `processBeat()` 이동
+- [x] `retryBattle()` 이동
+- [x] `showGameOver()` 이동
+- [x] 점수, 콤보, HP, 적 HP 계산 책임 정리
 - [ ] 전투 종료 후 `stage_clear` 또는 `gameover` 전환이 정상인지 확인
+
+Phase 10 메모
+
+- [x] 전투 시작/재도전/게임오버/박자 판정을 `createBattleController()`로 분리
+- [x] 점수, 콤보, HP, 적 HP, 피격/공격 애니메이션 상태 갱신 책임을 `battle.js`로 이동
+- [x] `main.js`는 전투 루프에서 박자 경과 시 battle controller 호출만 담당
+- [ ] 브라우저 실기동으로 스테이지 클리어/게임오버 전환 최종 확인
 
 ## Phase 11. 공통 유틸과 진입점 정리
 
