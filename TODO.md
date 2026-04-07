@@ -141,22 +141,35 @@ Phase 5 메모
 
 ## Phase 6. 입력 처리 분리
 
-- [ ] `js/input.js` 생성
-- [ ] 키보드 입력 처리 코드 이동
-- [ ] `getActiveGesture()` 이동
-- [ ] 키 입력과 진행 입력(`SPACE`, `ENTER`) 처리 경계 정리
-- [ ] 입력 모듈이 상태와 DOM에 접근하는 방식 단순화
+- [x] `js/input.js` 생성
+- [x] 키보드 입력 처리 코드 이동
+- [x] `getActiveGesture()` 이동
+- [x] 키 입력과 진행 입력(`SPACE`, `ENTER`) 처리 경계 정리
+- [x] 입력 모듈이 상태와 DOM에 접근하는 방식 단순화
 - [ ] 키보드만으로 처음부터 끝까지 진행 가능한지 확인
+
+Phase 6 메모
+
+- [x] 키보드 입력을 `createInputController()`로 분리
+- [x] 입력 표시 업데이트를 `input.js`로 분리
+- [x] `main.js`는 입력 모듈 조립과 `getActiveGesture()` 위임만 담당
+- [ ] 브라우저 실기동으로 키보드 전용 진행 최종 확인
 
 ## Phase 7. MediaPipe 분리
 
-- [ ] `js/mediapipe.js` 생성
-- [ ] `classifyGesture()` 이동
-- [ ] `initMediapipe()` 이동
-- [ ] `onHandResults()` 이동
-- [ ] 웹캠 캔버스 참조와 상태 갱신 방식 정리
+- [x] `js/mediapipe.js` 생성
+- [x] `classifyGesture()` 이동
+- [x] `initMediapipe()` 이동
+- [x] `onHandResults()` 이동
+- [x] 웹캠 캔버스 참조와 상태 갱신 방식 정리
 - [ ] 웹캠 사용 시 제스처 감지가 기존처럼 동작하는지 확인
 - [ ] 웹캠 실패 시 키보드 대체 입력이 유지되는지 확인
+
+Phase 7 메모
+
+- [x] 제스처 분류와 MediaPipe 초기화를 `js/mediapipe.js`로 분리
+- [x] 웹캠 결과는 `onGestureChange` 콜백으로만 `main.js`에 전달
+- [ ] 브라우저 실기동으로 웹캠 감지와 키보드 fallback 최종 확인
 
 ## Phase 8. 렌더링 분리
 

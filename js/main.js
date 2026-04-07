@@ -9,6 +9,8 @@ import {
   GESTURE_NAMES,
   STAGES,
 } from './data.js';
+import { createInputController } from './input.js';
+import { initMediapipe } from './mediapipe.js';
 import { HAND_ICONS, SPRITES } from './sprites.js';
 import {
   createBattleStartState,
@@ -33,6 +35,7 @@ const landmarkCtx = landmarkCanvas.getContext('2d');
 const targetCanvas = document.getElementById('target-canvas');
 const targetCtx = targetCanvas.getContext('2d');
 targetCtx.imageSmoothingEnabled = false;
+const gestureDetectDisplay = document.getElementById('gesture-detect-display');
 
 function resizeCanvas() {
   const lp = document.getElementById('left-panel');
@@ -50,6 +53,19 @@ function resizeLandmark() {
 }
 window.addEventListener('resize', resizeLandmark);
 resizeLandmark();
+
+const inputController = createInputController({
+  state: GS,
+  displayEl: gestureDetectDisplay,
+  gestureKeys: GESTURE_KEYS,
+  gestureNames: GESTURE_NAMES,
+  gestureColors: GESTURE_COLORS,
+  onRetryBattle: retryBattle,
+  onRestartGame: restartGame,
+  onAdvanceInput: handleAdvanceInput,
+});
+
+inputController.bind();
 
 // ─── SPRITE RENDERER ─────────────────────────────────────────────────────────
 function drawSprite(ctx, sprite, x, y, scale, flipX=false, tintWhite=false) {
@@ -443,124 +459,8 @@ function updateBeatBar(frac) {
   document.getElementById('beat-bar-fill').style.width = (frac*100)+'%';
 }
 
-// ─── GESTURE DETECTION (Mediapipe) ───────────────────────────────────────────
-let mpHands = null;
-let mpCamera = null;
-
-// ─── 제스처 분류 (미러 모드 기준) ────────────────────────────────────────────
-// 랜드마크 인덱스:
-//   손목=0, 엄지=1~4, 검지=5~8, 중지=9~12, 약지=13~16, 새끼=17~20
-//   tip: 4,8,12,16,20 / MCP(관절뿌리): 2,5,9,13,17
-function classifyGesture(landmarks) {
-  if (!landmarks || landmarks.length < 21) return null;
-  const lm = landmarks;
-
-  // 손가락 펴짐 판정: tip.y < MCP.y (tip이 관절뿌리보다 위쪽 = 펴짐)
-  // MCP 기준이 PIP 기준보다 더 안정적
-  function ext(tipIdx, mcpIdx) {
-    return lm[tipIdx].y < lm[mcpIdx].y - 0.03;
-  }
-
-  // 엄지: 미러 모드에서 tip.x > IP.x 이면 옆으로 뻗은 것
-  const thumbExt = lm[4].x > lm[3].x;
-  const idxExt   = ext(8,  5);
-  const midExt   = ext(12, 9);
-  const rngExt   = ext(16, 13);
-  const pkyExt   = ext(20, 17);
-
-  // 엄지 끝 ↔ 검지 끝 거리 (ok_sign 판정용)
-  const okDist = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y);
-
-  // ① ok_sign (👌): 엄지+검지 끝이 가깝고, 중지 이상은 펴져 있음
-  //    → 다른 패턴과 겹치기 전에 먼저 판정
-  if (okDist < 0.07 && midExt) return 'ok_sign';
-
-  // ② thumb_up (👍): 엄지 뻗음 + 나머지 4손가락 전부 접힘
-  //    → fist 보다 반드시 먼저 체크 (조건이 fist에 포함되므로)
-  if (thumbExt && !idxExt && !midExt && !rngExt && !pkyExt) return 'thumb_up';
-
-  // ③ fist (✊): 4손가락 전부 접힘 (엄지 무관)
-  if (!idxExt && !midExt && !rngExt && !pkyExt) return 'fist';
-
-  // ④ open_hand (✋): 4손가락 전부 펴짐
-  if (idxExt && midExt && rngExt && pkyExt) return 'open_hand';
-
-  // ⑤ peace (✌️): 검지+중지만 펴짐
-  if (idxExt && midExt && !rngExt && !pkyExt) return 'peace';
-
-  // ⑥ pointing (☝️): 검지만 펴짐
-  if (idxExt && !midExt && !rngExt && !pkyExt) return 'pointing';
-
-  return null;
-}
-
-function initMediapipe() {
-  const videoEl = document.getElementById('webcam');
-  try {
-    mpHands = new Hands({locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
-    mpHands.setOptions({maxNumHands:1, modelComplexity:1, minDetectionConfidence:0.7, minTrackingConfidence:0.5});
-    mpHands.onResults(onHandResults);
-    mpCamera = new Camera(videoEl, {
-      onFrame: async ()=>{ await mpHands.send({image:videoEl}); },
-      width:320, height:240
-    });
-    mpCamera.start();
-  } catch(e) {
-    console.warn('Mediapipe failed:', e);
-  }
-}
-
-function onHandResults(results) {
-  landmarkCtx.clearRect(0, 0, landmarkCanvas.width, landmarkCanvas.height);
-  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-    const lm = results.multiHandLandmarks[0];
-    // Draw landmarks
-    drawConnectors(landmarkCtx, lm, HAND_CONNECTIONS, {color:'rgba(0,255,128,0.6)', lineWidth:1.5});
-    drawLandmarks(landmarkCtx, lm, {color:'rgba(255,200,0,0.9)', lineWidth:1, radius:3});
-    GS.detectedGesture = classifyGesture(lm);
-  } else {
-    GS.detectedGesture = null;
-  }
-  const dg = document.getElementById('gesture-detect-display');
-  if (GS.detectedGesture) {
-    dg.textContent = `감지: ${GESTURE_NAMES[GS.detectedGesture]||GS.detectedGesture}`;
-    dg.style.color = GESTURE_COLORS[GS.detectedGesture] || '#4ade80';
-  } else {
-    dg.textContent = '감지: -';
-    dg.style.color = '#4ade80';
-  }
-}
-
-// ─── KEYBOARD INPUT ───────────────────────────────────────────────────────────
-let keyGesture = null;
-document.addEventListener('keydown', e => {
-  const k = e.key.toLowerCase();
-  if (GESTURE_KEYS[k]) {
-    keyGesture = GESTURE_KEYS[k];
-    // apply immediately as detected
-    GS.detectedGesture = keyGesture;
-    const dg = document.getElementById('gesture-detect-display');
-    dg.textContent = `감지: ${GESTURE_NAMES[keyGesture]||keyGesture}`;
-    dg.style.color = GESTURE_COLORS[keyGesture] || '#4ade80';
-  }
-  if (GS.gameOverVisible) {
-    if (k === 'r') { restartGame(); return; }
-    if (k === ' ' || k === 'enter') { retryBattle(); return; }
-  }
-  // Advance dialog/stage
-  if ([' ','enter','arrowdown','arrowright'].includes(k)) {
-    handleAdvanceInput();
-  }
-});
-document.addEventListener('keyup', e=>{
-  const k=e.key.toLowerCase();
-  if (GESTURE_KEYS[k] && keyGesture===GESTURE_KEYS[k]) {
-    keyGesture = null;
-  }
-});
-
 function getActiveGesture() {
-  return GS.detectedGesture || keyGesture;
+  return inputController.getActiveGesture();
 }
 
 // ─── GAME FLOW ────────────────────────────────────────────────────────────────
@@ -568,6 +468,7 @@ function retryBattle() {
   if (!GS.gameOverVisible) return;
   document.getElementById('gameover-overlay').classList.remove('visible');
   Object.assign(GS, resetBattleState(GS, STAGES[GS.stageIdx], performance.now()));
+  inputController.reset();
 }
 
 function restartGame() {
@@ -575,6 +476,7 @@ function restartGame() {
   document.getElementById('gameover-overlay').classList.remove('visible');
   document.getElementById('stage-clear-overlay').classList.remove('visible');
   document.getElementById('stage-title-overlay').classList.remove('visible');
+  inputController.reset();
   startCutscene('intro');
 }
 
@@ -930,7 +832,15 @@ function gameLoop(timestamp) {
 function init() {
   // Show loading briefly, then start intro
   GS.phase = 'loading';
-  initMediapipe();
+  initMediapipe({
+    videoEl: document.getElementById('webcam'),
+    landmarkCtx,
+    landmarkCanvas,
+    onGestureChange: gesture => {
+      GS.detectedGesture = gesture;
+      inputController.refreshDisplay();
+    },
+  });
   setTimeout(()=>{
     startCutscene('intro');
   }, 1500);
