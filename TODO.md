@@ -124,12 +124,20 @@ Phase 4 메모
 
 ## Phase 5. 상태 관리 분리
 
-- [ ] `js/state.js` 생성
-- [ ] `GS` 초기 상태 정의 이동
-- [ ] `createInitialState()` 형태로 초기화 함수 정리
-- [ ] 전투 재시작용 상태 리셋 함수 정리
-- [ ] 전체 재시작용 상태 리셋 함수 정리
-- [ ] 상태 변경 책임이 흩어지지 않도록 진입 함수 이름 정리
+- [x] `js/state.js` 생성
+- [x] `GS` 초기 상태 정의 이동
+- [x] `createInitialState()` 형태로 초기화 함수 정리
+- [x] 전투 재시작용 상태 리셋 함수 정리
+- [x] 전체 재시작용 상태 리셋 함수 정리
+- [x] 상태 변경 책임이 흩어지지 않도록 진입 함수 이름 정리
+
+Phase 5 메모
+
+- [x] 기본 상태를 `createInitialState()`로 분리
+- [x] 일반 전투 시작 상태를 `createBattleStartState()`로 분리
+- [x] 재도전 상태를 `resetBattleState()`로 분리
+- [x] 전체 재시작 상태를 `resetRunState()`로 분리
+- [ ] 브라우저 실기동으로 재시작/재도전 흐름 최종 확인
 
 ## Phase 6. 입력 처리 분리
 

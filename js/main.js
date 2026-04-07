@@ -10,53 +10,17 @@ import {
   STAGES,
 } from './data.js';
 import { HAND_ICONS, SPRITES } from './sprites.js';
+import {
+  createBattleStartState,
+  createInitialState,
+  resetBattleState,
+  resetRunState,
+} from './state.js';
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const PIXEL = 4;
 
 // ─── GAME STATE ──────────────────────────────────────────────────────────────
-const GS = {
-  phase: 'loading', // loading → intro_cutscene → stage_title → battle → stage_clear → boss_defeat_cutscene → ending_cutscene → credits
-  stageIdx: 0,
-  heroHp: 5,
-  heroMaxHp: 5,
-  score: 0,
-  combo: 0,
-  beatIdx: 0,
-  beatTimer: 0,
-  bpm: 58,
-  beatInterval: 60000/58,
-  lastBeatTime: 0,
-  currentGesture: null,
-  detectedGesture: null,
-  heroX: 0, heroY: 0,
-  heroAnimState: 'idle', // idle, attack, hurt, victory, defeat
-  heroAnimTimer: 0,
-  heroOffsetX: 0, heroOffsetY: 0,
-  enemyAnimState: 'idle',
-  enemyAnimTimer: 0,
-  enemyOffsetX: 0, enemyOffsetY: 0,
-  enemyFlash: false,
-  enemyHp: 3, enemyMaxHp: 3,
-  beatPulse: 0,
-  feedbackTimer: 0,
-  feedbackText: '',
-  feedbackColor: '',
-  idleWobble: 0,
-  cutsceneIdx: 0,
-  cutsceneLine: 0,
-  typewriterText: '',
-  typewriterFull: '',
-  typewriterTimer: 0,
-  waitingGesture: null,
-  gestureHeld: false,
-  gestureHeldTimer: 0,
-  beatsProcessed: 0,
-  inputLocked: false,
-  stageClearVisible: false,
-  gameOverVisible: false,
-  flashAlpha: 0,
-  bossPhase: 0,
-};
+const GS = createInitialState();
 
 // ─── CANVAS SETUP ─────────────────────────────────────────────────────────────
 const canvas = document.getElementById('game-canvas');
@@ -602,38 +566,12 @@ function getActiveGesture() {
 // ─── GAME FLOW ────────────────────────────────────────────────────────────────
 function retryBattle() {
   if (!GS.gameOverVisible) return;
-  GS.gameOverVisible = false;
   document.getElementById('gameover-overlay').classList.remove('visible');
-  // 현재 스테이지 재시작 (HP 회복, 점수 유지)
-  GS.heroHp = GS.heroMaxHp;
-  GS.combo = 0;
-  GS.beatIdx = 0;
-  GS.beatsProcessed = 0;
-  GS.enemyOffsetX = 0; GS.enemyOffsetY = 0;
-  GS.heroOffsetX = 0;
-  GS.enemyFlash = false;
-  GS.feedbackTimer = 0;
-  GS.flashAlpha = 0;
-  GS.bossPhase = 0;
-  startBattle();
+  Object.assign(GS, resetBattleState(GS, STAGES[GS.stageIdx], performance.now()));
 }
 
 function restartGame() {
-  GS.phase = 'intro_cutscene';
-  GS.stageIdx = 0;
-  GS.heroHp = 5;
-  GS.heroMaxHp = 5;
-  GS.score = 0;
-  GS.combo = 0;
-  GS.beatIdx = 0;
-  GS.heroAnimState = 'idle';
-  GS.heroOffsetX = 0; GS.heroOffsetY = 0;
-  GS.enemyAnimState = 'idle';
-  GS.enemyOffsetX = 0; GS.enemyOffsetY = 0;
-  GS.enemyFlash = false;
-  GS.feedbackTimer = 0;
-  GS.gameOverVisible = false;
-  GS.stageClearVisible = false;
+  Object.assign(GS, resetRunState());
   document.getElementById('gameover-overlay').classList.remove('visible');
   document.getElementById('stage-clear-overlay').classList.remove('visible');
   document.getElementById('stage-title-overlay').classList.remove('visible');
@@ -732,19 +670,7 @@ function startStageTitle(idx) {
 function startBattle() {
   document.getElementById('stage-title-overlay').classList.remove('visible');
   const stage = STAGES[GS.stageIdx];
-  GS.phase = 'battle';
-  GS.beatIdx = 0;
-  GS.beatsProcessed = 0;
-  GS.bpm = stage.bpm;
-  GS.beatInterval = 60000 / stage.bpm;
-  GS.lastBeatTime = performance.now() + 500; // brief delay before first beat
-  GS.enemyHp = stage.enemyHp;
-  GS.enemyMaxHp = stage.enemyHp;
-  GS.heroAnimState = 'idle';
-  GS.enemyAnimState = 'idle';
-  GS.enemyOffsetX = 0; GS.enemyOffsetY = 0;
-  GS.heroOffsetX = 0; GS.heroOffsetY = 0;
-  GS.bossPhase = 0;
+  Object.assign(GS, createBattleStartState(stage, performance.now()));
 }
 
 function nextStage() {
