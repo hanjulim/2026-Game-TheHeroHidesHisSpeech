@@ -191,15 +191,22 @@ Phase 8 메모
 
 ## Phase 9. 컷신과 스테이지 흐름 분리
 
-- [ ] `js/cutscene.js` 생성
-- [ ] `startCutscene()` 이동
-- [ ] `getCutsceneLines()` 이동
-- [ ] `showDialogLine()` 이동
-- [ ] `endCutscene()` 이동
-- [ ] `handleAdvanceInput()` 중 컷신/타이틀/클리어 흐름 분리
-- [ ] `startStageTitle()`, `showStageClear()`, `nextStage()` 이동
-- [ ] 타입라이터 진행 책임 위치 정리
+- [x] `js/cutscene.js` 생성
+- [x] `startCutscene()` 이동
+- [x] `getCutsceneLines()` 이동
+- [x] `showDialogLine()` 이동
+- [x] `endCutscene()` 이동
+- [x] `handleAdvanceInput()` 중 컷신/타이틀/클리어 흐름 분리
+- [x] `startStageTitle()`, `showStageClear()`, `nextStage()` 이동
+- [x] 타입라이터 진행 책임 위치 정리
 - [ ] 인트로부터 스테이지 진입까지 흐름이 끊기지 않는지 확인
+
+Phase 9 메모
+
+- [x] 컷신과 스테이지 전환 흐름을 `createCutsceneController()`로 분리
+- [x] 타입라이터 진행과 제스처 대기 업데이트를 `cutscene.js`로 이동
+- [x] `main.js`는 컷신 컨트롤러 호출과 전투 로직만 담당
+- [ ] 브라우저 실기동으로 인트로부터 스테이지 진입/클리어 전환 최종 확인
 
 ## Phase 10. 전투 로직 분리
 
