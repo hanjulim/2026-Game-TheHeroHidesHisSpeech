@@ -461,6 +461,68 @@
 'use strict';
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const PIXEL = 4;
+const ASSET_PATHS = {
+  backgrounds: {
+    meadow: './assets/sprites/backgrounds/meadow.png',
+    forest: './assets/sprites/backgrounds/forest.png',
+    cave: './assets/sprites/backgrounds/cave.png',
+    demon_castle: './assets/sprites/backgrounds/demon_castle.png',
+    demonlord_throne_room: './assets/sprites/backgrounds/demonlord_throne_room.png',
+    royal_throne_room: './assets/sprites/backgrounds/royal_throne_room.png',
+  },
+  characters: {
+    hero: './assets/sprites/character/hero_256.png',
+    slime: './assets/sprites/character/slime_256.png',
+    goblin: './assets/sprites/character/goblin_256.png',
+    orc: './assets/sprites/character/orc_256.png',
+    demon: './assets/sprites/character/demon_256.png',
+    demonlord: './assets/sprites/character/demonlord_256.png',
+    princess: './assets/sprites/character/princess_256.png',
+    king: './assets/sprites/character/king_256.png',
+  },
+  gestures: {
+    fist: './assets/sprites/gesture/fist_256.png',
+    open_hand: './assets/sprites/gesture/open_hand_256.png',
+    pointing: './assets/sprites/gesture/pointing_256.png',
+    peace: './assets/sprites/gesture/peace_256.png',
+    ok_sign: './assets/sprites/gesture/ok_sign_256.png',
+    thumb_up: './assets/sprites/gesture/thumb_up_256.png',
+    thumb_down: './assets/sprites/gesture/thumb_down_256.png',
+  },
+};
+
+const ASSETS = {
+  backgrounds: {},
+  characters: {},
+  gestures: {},
+};
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    img.src = src;
+  });
+}
+
+async function loadAssetGroup(target, pathMap) {
+  await Promise.all(Object.entries(pathMap).map(async ([key, src]) => {
+    try {
+      target[key] = await loadImage(src);
+    } catch (err) {
+      console.warn(err.message);
+    }
+  }));
+}
+
+async function loadAssets() {
+  await Promise.all([
+    loadAssetGroup(ASSETS.backgrounds, ASSET_PATHS.backgrounds),
+    loadAssetGroup(ASSETS.characters, ASSET_PATHS.characters),
+    loadAssetGroup(ASSETS.gestures, ASSET_PATHS.gestures),
+  ]);
+}
 
 // ─── SPRITE DATA ─────────────────────────────────────────────────────────────
 const SPRITES = {};
@@ -973,7 +1035,7 @@ const STAGES = [
     afterText:'오크를 물리쳤다! 딱밤 기술도 터득했다.',
   },
   {
-    id:4, name:'STAGE 4', location:'마왕성 입구', bgType:'castle',
+    id:4, name:'STAGE 4', location:'마왕성 입구', bgType:'demon_castle',
     enemy:'demon', enemyName:'악마 근위대', enemyEmoji:'😈', enemyHp:14,
     bpm:65,
     narrative:'마왕성 문 앞! 악마 근위대가 막아섰다!',
@@ -984,7 +1046,7 @@ const STAGES = [
     afterText:'근위대를 물리쳤다! 마왕성 문이 열렸다!',
   },
   {
-    id:5, name:'STAGE 5', location:'마왕의 왕좌', bgType:'throne',
+    id:5, name:'STAGE 5', location:'마왕의 왕좌', bgType:'demonlord_throne_room',
     enemy:'demonlord', enemyName:'마왕 다크로드', enemyEmoji:'👿', enemyHp:20,
     bpm:60,
     narrative:'드디어 마왕과 마주쳤다!! 모든 기술을 써라!!!',
@@ -1129,6 +1191,86 @@ function resizeLandmark() {
 }
 window.addEventListener('resize', resizeLandmark);
 resizeLandmark();
+
+function drawImageCover(ctx, img, width, height) {
+  const scale = Math.max(width / img.naturalWidth, height / img.naturalHeight);
+  const drawW = img.naturalWidth * scale;
+  const drawH = img.naturalHeight * scale;
+  const dx = (width - drawW) / 2;
+  const dy = (height - drawH) / 2;
+  ctx.drawImage(img, dx, dy, drawW, drawH);
+}
+
+function drawImageInBox(ctx, img, x, y, boxW, boxH, options={}) {
+  const flipX = options.flipX || false;
+  const tintWhite = options.tintWhite || false;
+  const alignX = options.alignX || 'center';
+  const alignY = options.alignY || 'center';
+  const scale = Math.min(boxW / img.naturalWidth, boxH / img.naturalHeight);
+  const drawW = img.naturalWidth * scale;
+  const drawH = img.naturalHeight * scale;
+
+  let dx = x;
+  let dy = y;
+
+  if (alignX === 'center') dx += (boxW - drawW) / 2;
+  else if (alignX === 'right') dx += boxW - drawW;
+
+  if (alignY === 'center') dy += (boxH - drawH) / 2;
+  else if (alignY === 'bottom') dy += boxH - drawH;
+
+  ctx.save();
+  ctx.translate(dx, dy);
+  if (flipX) {
+    ctx.translate(drawW, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(img, 0, 0, drawW, drawH);
+  if (tintWhite) {
+    ctx.globalCompositeOperation = 'source-atop';
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.fillRect(0, 0, drawW, drawH);
+  }
+  ctx.restore();
+
+  return {x: dx, y: dy, w: drawW, h: drawH};
+}
+
+function drawCharacterSprite(ctx, characterKey, fallbackSprite, x, y, scale, flipX=false, tintWhite=false) {
+  const boxW = fallbackSprite.w * PIXEL * scale;
+  const boxH = fallbackSprite.h * PIXEL * scale;
+  const img = ASSETS.characters[characterKey];
+  if (img) {
+    return drawImageInBox(ctx, img, x, y, boxW, boxH, {flipX, tintWhite, alignX:'center', alignY:'bottom'});
+  }
+  drawSprite(ctx, fallbackSprite, x, y, scale, flipX, tintWhite);
+  return {x, y, w: boxW, h: boxH};
+}
+
+function drawGestureGraphic(ctx, gestureName, x, y, boxW, boxH, glowColor, glowAmt) {
+  const img = ASSETS.gestures[gestureName];
+  if (img) {
+    if (glowAmt > 0) {
+      ctx.save();
+      ctx.shadowBlur = glowAmt;
+      ctx.shadowColor = glowColor || GESTURE_COLORS[gestureName] || '#fff';
+      drawImageInBox(ctx, img, x, y, boxW, boxH, {alignX:'center', alignY:'center'});
+      ctx.restore();
+    } else {
+      drawImageInBox(ctx, img, x, y, boxW, boxH, {alignX:'center', alignY:'center'});
+    }
+    return;
+  }
+
+  const icon = HAND_ICONS[gestureName];
+  if (!icon) return;
+  const scale = Math.min(boxW / icon.w, boxH / icon.h);
+  const drawW = icon.w * scale;
+  const drawH = icon.h * scale;
+  const ox = x + (boxW - drawW) / 2;
+  const oy = y + (boxH - drawH) / 2;
+  drawHandIcon(ctx, gestureName, ox, oy, scale, glowColor, glowAmt);
+}
 
 // ─── SPRITE RENDERER ─────────────────────────────────────────────────────────
 function drawSprite(ctx, sprite, x, y, scale, flipX=false, tintWhite=false) {
@@ -1310,17 +1452,27 @@ function drawBg_throne(ctx, w, h) {
 
 function drawBackground(bgType) {
   const w=canvas.width, h=canvas.height;
+  const bgImg = ASSETS.backgrounds[bgType];
+  if (bgImg) {
+    drawImageCover(ctx, bgImg, w, h);
+    return;
+  }
   switch(bgType){
     case 'meadow': drawBg_meadow(ctx,w,h); break;
     case 'forest': drawBg_forest(ctx,w,h); break;
     case 'cave':   drawBg_cave(ctx,w,h); break;
-    case 'castle': drawBg_castle(ctx,w,h); break;
-    case 'throne': drawBg_throne(ctx,w,h); break;
+    case 'demon_castle': drawBg_castle(ctx,w,h); break;
+    case 'demonlord_throne_room': drawBg_throne(ctx,w,h); break;
     default: ctx.fillStyle='#1a1a2e'; ctx.fillRect(0,0,w,h);
   }
 }
 
-function drawThroneRoomBg() {
+function drawThroneRoomBg(bgType='royal_throne_room') {
+  const bgImg = ASSETS.backgrounds[bgType];
+  if (bgImg) {
+    drawImageCover(ctx, bgImg, canvas.width, canvas.height);
+    return;
+  }
   // For cutscenes, use the throne-like room
   const w=canvas.width, h=canvas.height;
   ctx.fillStyle='#1a0a0e'; ctx.fillRect(0,0,w,h);
@@ -1351,8 +1503,8 @@ function getGroundY(bgType) {
     case 'meadow': return h*0.62;
     case 'forest': return h*0.72;
     case 'cave':   return h*0.76;
-    case 'castle': return h*0.70;
-    case 'throne': return h*0.73;
+    case 'demon_castle': return h*0.70;
+    case 'demonlord_throne_room': return h*0.73;
     default:       return h*0.65;
   }
 }
@@ -1386,7 +1538,7 @@ function drawBattleScene(stage, timestamp) {
   const baseHeroX = w * 0.15;
   const hx = baseHeroX + GS.heroOffsetX;
   const hy = groundY - heroH + GS.heroOffsetY + Math.sin(GS.idleWobble * Math.PI * 2) * 3;
-  drawSprite(ctx, heroSprite, hx, hy, heroScale, false, false);
+  drawCharacterSprite(ctx, 'hero', heroSprite, hx, hy, heroScale, false, false);
 
   // Enemy
   const enemySprite = getEnemySprite(stage.enemy);
@@ -1398,16 +1550,16 @@ function drawBattleScene(stage, timestamp) {
   const baseEnemyX = w * 0.65;
   const ex = baseEnemyX + GS.enemyOffsetX;
   const ey = groundY - enemyH + GS.enemyOffsetY + Math.sin((GS.idleWobble + 0.5) * Math.PI * 2) * 2;
-  drawSprite(ctx, enemySprite, ex, ey, enemyScale, true, GS.enemyFlash);
+  const enemyRect = drawCharacterSprite(ctx, stage.enemy, enemySprite, ex, ey, enemyScale, true, GS.enemyFlash);
 
   // HP bars
-  drawEnemyHpBar(ex, ey-20, enemyW, stage);
+  drawEnemyHpBar(enemyRect.x, enemyRect.y-20, enemyRect.w, stage);
 }
 
-function drawThroneScene(charLeft, charRight) {
-  // charLeft/Right: {sprite, scale, flipX}
+function drawThroneScene(charLeft, charRight, bgType='royal_throne_room') {
+  // charLeft/Right: {key, sprite, scale, flipX}
   const w=canvas.width, h=canvas.height;
-  drawThroneRoomBg();
+  drawThroneRoomBg(bgType);
   const groundY = h * 0.73;
 
   if (charLeft) {
@@ -1415,14 +1567,14 @@ function drawThroneScene(charLeft, charRight) {
     const sc = charLeft.scale || 1.5;
     const cw = sp.w * PIXEL * sc;
     const ch = sp.h * PIXEL * sc;
-    drawSprite(ctx, sp, w*0.2 - cw/2, groundY - ch, sc, charLeft.flipX||false);
+    drawCharacterSprite(ctx, charLeft.key, sp, w*0.2 - cw/2, groundY - ch, sc, charLeft.flipX||false);
   }
   if (charRight) {
     const sp = charRight.sprite;
     const sc = charRight.scale || 1.5;
     const cw = sp.w * PIXEL * sc;
     const ch = sp.h * PIXEL * sc;
-    drawSprite(ctx, sp, w*0.7 - cw/2, groundY - ch, sc, charRight.flipX||false);
+    drawCharacterSprite(ctx, charRight.key, sp, w*0.7 - cw/2, groundY - ch, sc, charRight.flipX||false);
   }
 }
 
@@ -1480,19 +1632,17 @@ function drawTargetGesture(gestureName, pulse) {
   const tcx = targetCtx;
   tcx.clearRect(0, 0, tc.width, tc.height);
 
-  if (!gestureName || !HAND_ICONS[gestureName]) return;
+  if (!gestureName) return;
 
-  const baseSize = 4; // 4px per unit = 40*4 = 160px
-  const s = baseSize * (1 + pulse * 0.25);
-  const icon = HAND_ICONS[gestureName];
-  const drawW = icon.w * s;
-  const drawH = icon.h * s;
+  const drawSize = tc.width * (1 + pulse * 0.25);
+  const drawW = drawSize;
+  const drawH = drawSize;
   const ox = (tc.width - drawW) / 2;
   const oy = (tc.height - drawH) / 2;
 
   const glowAmt = 8 + pulse * 35;
   const color = GESTURE_COLORS[gestureName] || '#fff';
-  drawHandIcon(tcx, gestureName, ox, oy, s, color, glowAmt);
+  drawGestureGraphic(tcx, gestureName, ox, oy, drawW, drawH, color, glowAmt);
 
   // Update name
   const gnt = document.getElementById('gesture-name-text');
@@ -1512,7 +1662,7 @@ function drawUpcomingGestures(sequence, currentIdx) {
     if (nextIdx < sequence.length) {
       const g = sequence[nextIdx];
       const color = GESTURE_COLORS[g] || '#fff';
-      drawHandIcon(cx, g, 4, 4, 1, color, 5);
+      drawGestureGraphic(cx, g, 4, 4, 40, 40, color, 5);
     }
   }
 }
@@ -2018,14 +2168,16 @@ function gameLoop(timestamp) {
     if (ct==='intro' || ct==='ending') {
       // Throne room with king + hero
       drawThroneScene(
-        {sprite: SPRITES.king_idle, scale: 1.5, flipX: false},
-        {sprite: SPRITES.hero_idle, scale: 1.5, flipX: true}
+        {key:'king', sprite: SPRITES.king_idle, scale: 1.5, flipX: false},
+        {key:'hero', sprite: SPRITES.hero_idle, scale: 1.5, flipX: true},
+        'royal_throne_room'
       );
     } else if (ct==='boss_defeat') {
       // Throne with princess + hero
       drawThroneScene(
-        {sprite: SPRITES.princess_idle, scale: 1.5, flipX: false},
-        {sprite: SPRITES.hero_idle, scale: 1.5, flipX: true}
+        {key:'princess', sprite: SPRITES.princess_idle, scale: 1.5, flipX: false},
+        {key:'hero', sprite: SPRITES.hero_idle, scale: 1.5, flipX: true},
+        'demonlord_throne_room'
       );
     } else if (ct && ct.startsWith('stage_')) {
       const si = parseInt(ct.split('_')[1]) - 1;
@@ -2246,18 +2398,18 @@ function checkCertView() {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-function init() {
+async function init() {
   if (checkCertView()) return; // QR 스캔 후 인증서 보기 모드
   GS.phase = 'loading';
+  requestAnimationFrame(gameLoop);
+  await loadAssets();
   initMediapipe();
   setTimeout(()=>{
     startCutscene('intro');
   }, 1500);
-  requestAnimationFrame(gameLoop);
 }
 
 init();
 </script>
 </body>
 </html>
-index.html
