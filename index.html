@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>용사가 손가락을 숨김</title>
+<title>용사가 말을 숨김</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -235,46 +235,46 @@
     transition: opacity 0.5s;
   }
   #stage-title-overlay.visible { opacity: 1; pointer-events: all; }
-  #stage-title-text { font-size: 18px; color: #ffd700; text-align: center; text-shadow: 0 0 30px #ffd700; }
-  #stage-narrative { font-size: 13px; color: #fff; text-align: center; max-width: 80%; line-height: 2.2; }
-  #stage-start-hint { font-size: 11px; color: rgba(255,255,255,0.5); animation: blink 1s infinite; }
+  #stage-title-text { font-size: 22px; color: #ffd700; text-align: center; text-shadow: 0 0 30px #ffd700; }
+  #stage-narrative { font-size: 16px; color: #fff; text-align: center; max-width: 80%; line-height: 2.4; }
+  #stage-start-hint { font-size: 13px; color: rgba(255,255,255,0.5); animation: blink 1s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
   /* Cutscene dialog */
   #dialog-box {
     position: absolute;
-    bottom: 20px; left: 20px; right: 20px;
-    background: rgba(0,0,10,0.93);
+    bottom: 16px; left: 16px; right: 16px;
+    background: rgba(0,0,10,0.95);
     border: 3px solid #ffd700;
     border-radius: 4px;
-    padding: 14px 18px 14px 14px;
+    padding: 18px 22px 18px 18px;
     z-index: 30;
     display: none;
-    min-height: 120px;
+    min-height: 180px;
   }
   #dialog-box.visible { display: block; }
   #dialog-speaker {
-    font-size: 13px;
+    font-size: 20px;
     color: #ffd700;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
   }
   #dialog-text {
-    font-size: 13px;
+    font-size: 18px;
     color: #fff;
-    line-height: 2.2;
-    min-height: 52px;
+    line-height: 2.5;
+    min-height: 72px;
   }
   #dialog-continue {
-    font-size: 10px;
+    font-size: 12px;
     color: rgba(255,255,255,0.4);
     text-align: right;
-    margin-top: 6px;
+    margin-top: 10px;
     animation: blink 0.7s infinite;
   }
   #dialog-gesture-hint {
-    font-size: 12px;
+    font-size: 16px;
     color: #4ade80;
     text-align: center;
-    margin-top: 6px;
+    margin-top: 10px;
     animation: blink 0.8s infinite;
   }
   /* Stage clear */
@@ -293,11 +293,11 @@
     transition: opacity 0.5s;
   }
   #stage-clear-overlay.visible { opacity: 1; pointer-events: all; }
-  #clear-title { font-size: 20px; color: #ffd700; text-shadow: 0 0 40px #ffd700; }
-  #clear-skill { font-size: 12px; color: #4ade80; text-align: center; line-height: 2.2; }
-  #clear-after { font-size: 12px; color: #fff; text-align: center; max-width: 80%; line-height: 2.2; }
-  #clear-score { font-size: 12px; color: #ffd700; }
-  #clear-hint { font-size: 10px; color: rgba(255,255,255,0.4); animation: blink 1s infinite; }
+  #clear-title { font-size: 24px; color: #ffd700; text-shadow: 0 0 40px #ffd700; }
+  #clear-skill { font-size: 15px; color: #4ade80; text-align: center; line-height: 2.4; }
+  #clear-after { font-size: 14px; color: #fff; text-align: center; max-width: 80%; line-height: 2.4; }
+  #clear-score { font-size: 14px; color: #ffd700; }
+  #clear-hint { font-size: 13px; color: rgba(255,255,255,0.4); animation: blink 1s infinite; }
   /* Game over */
   #gameover-overlay {
     position: absolute;
@@ -316,6 +316,56 @@
   #gameover-overlay.visible { opacity: 1; pointer-events: all; }
   #gameover-title { font-size: 24px; color: #ef4444; text-shadow: 0 0 40px #ef4444; }
   #gameover-hint { font-size: 9px; color: rgba(255,255,255,0.4); animation: blink 1s infinite; }
+  /* Certificate overlay */
+  #cert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.97);
+    z-index: 300;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    overflow: auto;
+    padding: 20px;
+  }
+  #cert-overlay.visible { display: flex; }
+  #cert-title-text {
+    font-size: 16px;
+    color: #ffd700;
+    text-shadow: 0 0 20px #ffd700;
+    text-align: center;
+  }
+  #cert-main-row {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  #cert-canvas { border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255,215,0,0.4); display: block; }
+  #cert-qr-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  #cert-qr { background: #fff; padding: 8px; }
+  #cert-qr-label {
+    font-size: 8px;
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    line-height: 1.8;
+  }
+  #cert-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .cert-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    padding: 12px 18px;
+    background: transparent;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -378,10 +428,29 @@
         <div id="beat-bar-bg"><div id="beat-bar-fill"></div></div>
       </div>
       <div id="gesture-detect-display">감지: -</div>
-      <div id="keyboard-hint">키보드: A=✊ S=✋ D=☝️ F=✌️ G=👌 H=👍</div>
+      <div id="keyboard-hint">키보드: A=✊ S=✋ D=☝️ F=✌️ G=👌 H=👍 J=👎</div>
     </div>
   </div>
 </div>
+
+<!-- Certificate overlay -->
+<div id="cert-overlay">
+  <div id="cert-title-text">🏆 클리어 인증서</div>
+  <div id="cert-main-row">
+    <canvas id="cert-canvas" width="480" height="320"></canvas>
+    <div id="cert-qr-wrap">
+      <div id="cert-qr"></div>
+      <div id="cert-qr-label">📱 QR 스캔으로<br>인증서 보기</div>
+    </div>
+  </div>
+  <div id="cert-actions">
+    <button class="cert-btn" style="border:2px solid #ffd700;color:#ffd700;" onclick="downloadCert()">📥 저장하기</button>
+    <button class="cert-btn" style="border:2px solid #888;color:#888;" onclick="restartFromCert()">🔄 처음으로</button>
+  </div>
+</div>
+
+<!-- QRCode -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <!-- Mediapipe -->
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
@@ -829,84 +898,99 @@ function makeHandBase40() {
   HAND_ICONS.thumb_up = {w:40,h:40,pal:['transparent','#fdbcb4','#8B4513','#fff0f0'],data:d};
 })();
 
+// THUMB DOWN 👎
+(function(){
+  const d = makeHandBase40();
+  const fill=(r1,c1,r2,c2,v)=>{for(let r=r1;r<=r2;r++)for(let c=c1;c<=c2;c++)d[r][c]=v;};
+  // fist base (horizontal) - at top
+  fill(4,8,18,30,1);
+  // thumb pointing down
+  fill(16,6,32,14,1);
+  // knuckles
+  fill(14,12,18,30,1);
+  // thumbnail at bottom
+  fill(28,7,32,13,3);
+  HAND_ICONS.thumb_down = {w:40,h:40,pal:['transparent','#fdbcb4','#8B4513','#fff0f0'],data:d};
+})();
+
 // ─── GESTURE COLORS ──────────────────────────────────────────────────────────
 const GESTURE_COLORS = {
-  fist:      '#f97316',
-  open_hand: '#4ade80',
-  pointing:  '#60a5fa',
-  peace:     '#a78bfa',
-  ok_sign:   '#fbbf24',
-  thumb_up:  '#f472b6',
+  fist:       '#f97316',
+  open_hand:  '#4ade80',
+  pointing:   '#60a5fa',
+  peace:      '#a78bfa',
+  ok_sign:    '#fbbf24',
+  thumb_up:   '#f472b6',
+  thumb_down: '#94a3b8',
 };
 const GESTURE_NAMES = {
-  fist:      '✊ PUNCH',
-  open_hand: '✋ GUARD',
-  pointing:  '☝️ SLASH',
-  peace:     '✌️ COMBO',
-  ok_sign:   '👌 SPECIAL',
-  thumb_up:  '👍 YES!',
+  fist:       '✊ PUNCH',
+  open_hand:  '✋ GUARD',
+  pointing:   '☝️ SLASH',
+  peace:      '✌️ COMBO',
+  ok_sign:    '👌 SPECIAL',
+  thumb_up:   '👍 YES!',
+  thumb_down: '👎 NO!!',
 };
-const GESTURE_KEYS = { a:'fist', s:'open_hand', d:'pointing', f:'peace', g:'ok_sign', h:'thumb_up' };
+const GESTURE_KEYS = { a:'fist', s:'open_hand', d:'pointing', f:'peace', g:'ok_sign', h:'thumb_up', j:'thumb_down' };
 
 // ─── STAGE DATA ───────────────────────────────────────────────────────────────
+// introSequence: 컷씬 전략대로 처음에 반드시 수행하는 고정 순서
+// allowedGestures: 랜덤 배틀에서 사용 가능한 제스처 풀
+// totalBeats: 인트로 포함 총 박자 수
 const STAGES = [
   {
     id:1, name:'STAGE 1', location:'초원', bgType:'meadow',
-    enemy:'slime', enemyName:'슬라임', enemyEmoji:'🟢', enemyHp:3,
+    enemy:'slime', enemyName:'슬라임', enemyEmoji:'🟢', enemyHp:8,
     bpm:58,
     narrative:'왕성을 나선 용사는 초원에서 슬라임을 만났다!',
-    sequence: ['fist','fist','fist','fist','fist','fist','fist','fist',
-               'fist','fist','fist','fist','fist','fist','fist','fist'],
-    skillLearned:'PUNCH(✊) 스킬을 익혔다!',
-    afterText:'슬라임을 물리쳤다! 용사는 주먹 공격법을 터득했다.',
+    introSequence: ['fist','open_hand'],
+    allowedGestures: ['fist','open_hand'],
+    totalBeats: 14,
+    skillLearned:'PUNCH(✊) · GUARD(✋) 스킬을 익혔다!',
+    afterText:'슬라임을 물리쳤다! 용사는 주먹과 방어를 터득했다.',
   },
   {
     id:2, name:'STAGE 2', location:'어두운 숲', bgType:'forest',
-    enemy:'goblin', enemyName:'고블린', enemyEmoji:'👺', enemyHp:4,
+    enemy:'goblin', enemyName:'고블린', enemyEmoji:'👺', enemyHp:10,
     bpm:62,
     narrative:'숲 속에서 사나운 고블린이 나타났다!',
-    sequence: ['open_hand','fist','pointing','open_hand','fist','pointing','fist','fist','pointing','open_hand',
-               'open_hand','fist','pointing','open_hand','fist','pointing','fist','fist','pointing','open_hand'],
-    skillLearned:'GUARD(✋), SLASH(☝️) 스킬을 익혔다!',
-    afterText:'고블린을 물리쳤다! 용사는 방어와 베기를 익혔다.',
+    introSequence: ['pointing'],
+    allowedGestures: ['pointing','fist','open_hand'],
+    totalBeats: 16,
+    skillLearned:'SLASH(☝️) 도발 스킬을 익혔다!',
+    afterText:'고블린을 물리쳤다! 용사는 검지 도발을 익혔다.',
   },
   {
     id:3, name:'STAGE 3', location:'동굴', bgType:'cave',
-    enemy:'orc', enemyName:'오크 전사', enemyEmoji:'👹', enemyHp:5,
+    enemy:'orc', enemyName:'오크 전사', enemyEmoji:'👹', enemyHp:12,
     bpm:65,
     narrative:'동굴 속 오크 전사가 길을 막아섰다!',
-    sequence: ['fist','open_hand','pointing','fist','open_hand','pointing','peace','fist',
-               'pointing','open_hand','fist','peace',
-               'fist','open_hand','pointing','fist','open_hand','pointing','peace','fist',
-               'pointing','open_hand','fist','peace'],
-    skillLearned:'COMBO(✌️) 스킬을 익혔다!',
-    afterText:'오크를 물리쳤다! 용사는 콤보 기술도 터득했다.',
+    introSequence: ['open_hand','fist','ok_sign'],
+    allowedGestures: ['fist','open_hand','pointing','ok_sign'],
+    totalBeats: 20,
+    skillLearned:'SPECIAL(👌) 딱밤 스킬을 익혔다!',
+    afterText:'오크를 물리쳤다! 딱밤 기술도 터득했다.',
   },
   {
     id:4, name:'STAGE 4', location:'마왕성 입구', bgType:'castle',
-    enemy:'demon', enemyName:'악마 근위대', enemyEmoji:'😈', enemyHp:5,
+    enemy:'demon', enemyName:'악마 근위대', enemyEmoji:'😈', enemyHp:14,
     bpm:65,
     narrative:'마왕성 문 앞! 악마 근위대가 막아섰다!',
-    sequence: ['fist','pointing','open_hand','peace','ok_sign','fist','pointing','peace',
-               'open_hand','ok_sign','fist','pointing','peace','open_hand','ok_sign','fist',
-               'fist','pointing','open_hand','peace','ok_sign','fist','pointing','peace',
-               'open_hand','ok_sign','fist','pointing','peace','open_hand','ok_sign','fist'],
-    skillLearned:'SPECIAL(👌) 스킬을 익혔다!',
+    introSequence: ['thumb_down'],
+    allowedGestures: ['thumb_down','fist','open_hand','pointing','ok_sign'],
+    totalBeats: 24,
+    skillLearned:'NO(👎) 역따봉 스킬을 익혔다!',
     afterText:'근위대를 물리쳤다! 마왕성 문이 열렸다!',
   },
   {
     id:5, name:'STAGE 5', location:'마왕의 왕좌', bgType:'throne',
-    enemy:'demonlord', enemyName:'마왕 다크로드', enemyEmoji:'👿', enemyHp:9,
+    enemy:'demonlord', enemyName:'마왕 다크로드', enemyEmoji:'👿', enemyHp:20,
     bpm:60,
     narrative:'드디어 마왕과 마주쳤다!! 모든 기술을 써라!!!',
-    sequence: [
-      'fist','peace','pointing','open_hand','ok_sign','fist','peace','pointing',
-      'fist','peace','pointing','open_hand','ok_sign','fist','peace','pointing',
-      'ok_sign','fist','peace','pointing','open_hand','fist','ok_sign','peace','pointing','fist',
-      'ok_sign','fist','peace','pointing','open_hand','fist','ok_sign','peace','pointing','fist',
-      'fist','peace','pointing','open_hand','ok_sign','fist','peace','pointing',
-      'ok_sign','fist','peace','pointing','open_hand','fist','ok_sign','peace',
-    ],
+    introSequence: ['peace'],
+    allowedGestures: ['fist','open_hand','pointing','peace','ok_sign','thumb_up','thumb_down'],
+    totalBeats: 32,
     skillLearned:'',
     afterText:'마왕을 물리쳤다!!!',
     isBoss:true,
@@ -915,19 +999,60 @@ const STAGES = [
 
 // CUTSCENES
 const CUTSCENE_INTRO = [
-  {speaker:'👑 왕', text:'오, 용사여! 마왕이 우리 왕국에 쳐들어와 공주님을 납치해 갔소! 부탁이오, 공주님을 구해주시오!'},
-  {speaker:'👑 왕', text:'용사여... 지금 바로 떠날 의향이 있소?', waitGesture:'thumb_up'},
-  {speaker:'👑 왕', text:'역시 믿음직스럽소! 부디 건강히 돌아오시오...'},
+  {speaker:'📖', text:'옛날 옛적, 마왕은 세상의 모든 키보드와 마우스를 가져가 버렸습니다.'},
+  {speaker:'📖', text:'공주를 납치한 마왕에게 맞서 싸울 용사의 무기를 없애버리기 위함이었죠.'},
+  {speaker:'📖', text:'하지만 마왕은 한 가지를 간과했습니다. 이 나라의 용사 과무칸은 원래 말이 없고 과묵하며, 오직 손짓 하나로 모든 것을 해결하는 사나이였다는 사실을요.'},
+  {speaker:'👑 왕', text:'오, 이 나라의 용사, 과무칸이여! 마왕에게 납치된 공주를 구출해주시오!'},
+  {speaker:'⚔️ 과무칸', text:'...', waitGesture:'ok_sign'},
+  {speaker:'👑 왕', text:'고맙소! 마왕은 마우스와 키보드를 뺏었지만, 그대의 손은 뺏을 수 없소! 부디 안전하게 다녀오게나.'},
+  {speaker:'⚔️ 과무칸', text:'...', waitGesture:'thumb_up'},
 ];
+
+const CUTSCENE_STAGE = [
+  // Stage 1 - 슬라임
+  [
+    {speaker:'📖', text:'첫번째 적, 슬라임이 나타났습니다. 이 세계는 마왕에 의해 마우스와 키보드가 사라졌습니다. 이제 당신의 손이 직접 칼이 되고 방패가 되어야 합니다.'},
+    {speaker:'📖', text:'과무칸은 가장 원초적인 대화법을 선택합니다.'},
+    {speaker:'🟢 슬라임', text:'...(꾸물꾸물)'},
+    {speaker:'🗺️ 전략 가이드', text:'단단한 주먹(✊)으로 펀치하고, 녀석의 끈적한 공격은 손바닥(✋)을 펼쳐 거부하고 반사하세요!'},
+  ],
+  // Stage 2 - 고블린
+  [
+    {speaker:'📖', text:'비열한 고블린들은 용사를 비웃으며 덤불 속에 숨어 기습합니다. 녀석들을 끌어낼 도발이 필요합니다.'},
+    {speaker:'🗺️ 전략 가이드', text:'검지손가락을 들어 도발(☝️)하세요. 화가 난 고블린이 모습을 드러낼 것입니다. 이후 펀치와 반사로 마무리하세요!'},
+  ],
+  // Stage 3 - 오크
+  [
+    {speaker:'📖', text:'거구의 오크 전사는 단순한 공격에 눈도 깜짝하지 않습니다. 오크의 약점인 여린 이마를 노려 딱밤을 때리세요.'},
+    {speaker:'🗺️ 전략 가이드', text:'오크의 공격을 방어(✋)한 직후, 곧바로 주먹(✊)과 딱밤(👌)을 연결하세요. 거대한 오크의 이마 타격이 힘을 무너뜨릴 것입니다!'},
+  ],
+  // Stage 4 - 악마근위대
+  [
+    {speaker:'📖', text:'마왕성 입구를 지키는 근위대는 강력한 갑옷으로 무장해 주먹이 통하지 않습니다. 이들에겐 육체적 타격보다 뼈아픈 정신적 타격이 필요합니다.'},
+    {speaker:'🗺️ 전략 가이드', text:'오른손을 들어 역따봉(👎)을 날리세요! 무언의 비난에 근위대는 정신적 충격을 받고 방어력이 무너질 것입니다!'},
+  ],
+  // Stage 5 - 마왕
+  [
+    {speaker:'📖', text:'드디어 모든 입력 장치를 앗아간 만악의 근원, 마왕 다크로드 앞입니다. 마왕은 용사가 키보드와 마우스 없이는 자신을 공격하지 못할 거라 확신하고 있군요.'},
+    {speaker:'👿 마왕 다크로드', text:'크하하! 마우스도, 키보드도 없는 용사여! 네가 무엇을 할 수 있느냐!'},
+    {speaker:'🗺️ 전략 가이드', text:'말 대신 행동으로 보여주세요. 손가락 두 개로 브이(✌️)를 만들어 마왕의 양 눈을 찌르세요! 모든 제스처를 동원해 최후의 일격을 날리세요!'},
+  ],
+];
+
 const CUTSCENE_BOSS_DEFEAT = [
-  {speaker:'👿 마왕', text:'으아아아!!! 내가... 패배하다니...! [서서히 사라진다...]'},
-  {speaker:'👸 공주', text:'용사님!! 저를 구해주셔서 감사해요! 💕'},
+  {speaker:'👿 마왕 다크로드', text:'커헉...! 고작... 마우스 클릭조차 못 하는 인간의 손가락에... 마왕 다크로드인 내가 무너지다니...!'},
+{speaker:'👿 마왕 다크로드', text:'(서서히 디지털 노이즈가 되어 사라진다)'},
+  {speaker:'📖', text:'마왕이 사라지자, 그가 훔쳤던 세상의 모든 입력 장치들이 돌아오기 시작했습니다. 하지만 용사 과무칸은 여전히 자신의 손을 내려다볼 뿐입니다.'},
+  {speaker:'👸 공주', text:'용사님! 저를 구해주셔서 정말 감사해요. 당신의 그 침묵이 제게는 그 어떤 외침보다 크게 들렸답니다.💕'},
+  {speaker:'⚔️ 과무칸', text:'...', waitGesture:'thumb_up'},
+  {speaker:'👸 공주', text:'후훗, 역시 이름답게 과묵하군요. 자, 이제 왕국으로 돌아가요!'},
 ];
 const CUTSCENE_ENDING = [
-  {speaker:'👑 왕', text:'돌아왔군! 세상에, 정말로 마왕을 물리쳤소!! 용사여, 무엇이든 원하는 것을 말하시오!'},
-  {speaker:'👑 왕', text:'그대의 대답을 듣고 싶소...', waitGesture:'peace'},
-  {speaker:'👑 왕', text:'하하하! 역시 말이 없어도 뜻은 통하는구나! 이 나라 최고의 훈장을 용사에게 수여하오!! 만세!!'},
-  {speaker:'🎉 THE END', text:'용사가 손가락을 숨기며 세계를 구했다... 전설이 되다.'},
+  {speaker:'👑 왕', text:'돌아왔군, 용사 과무칸! 자네가 입력장치 없이 마왕을 물리쳤다는 소문이 온 나라에 퍼졌소! 이 나라 최고의 영광인 클리어 인증서를 수여하겠소!'},
+  {speaker:'👑 왕', text:'용사여, 공주를 구해주어 아주 고맙소. 마지막으로 하고 싶은 말이 있는가?'},
+  {speaker:'⚔️ 과무칸', text:'...', waitGesture:'peace'},
+  {speaker:'👑 왕', text:'하하하! 승리의 v로구만. 과연 과무칸 용사로구나! 자네의 그 손짓을 이 왕국의 영원한 기록으로 남기겠소! 만세!!'},
+  {speaker:'🎉 THE END', text:'말 없는 용사 과무칸, 세계를 구하다.'},
 ];
 
 // ─── GAME STATE ──────────────────────────────────────────────────────────────
@@ -973,6 +1098,7 @@ const GS = {
   gameOverVisible: false,
   flashAlpha: 0,
   bossPhase: 0,
+  currentSequence: [],
 };
 
 // ─── CANVAS SETUP ─────────────────────────────────────────────────────────────
@@ -1400,51 +1526,69 @@ function updateBeatBar(frac) {
 let mpHands = null;
 let mpCamera = null;
 
-// ─── 제스처 분류 (미러 모드 기준) ────────────────────────────────────────────
-// 랜드마크 인덱스:
-//   손목=0, 엄지=1~4, 검지=5~8, 중지=9~12, 약지=13~16, 새끼=17~20
-//   tip: 4,8,12,16,20 / MCP(관절뿌리): 2,5,9,13,17
 function classifyGesture(landmarks) {
   if (!landmarks || landmarks.length < 21) return null;
   const lm = landmarks;
 
-  // 손가락 펴짐 판정: tip.y < MCP.y (tip이 관절뿌리보다 위쪽 = 펴짐)
-  // MCP 기준이 PIP 기준보다 더 안정적
+  // 기존에 잘 작동하던 펴짐 판정 로직
   function ext(tipIdx, mcpIdx) {
     return lm[tipIdx].y < lm[mcpIdx].y - 0.03;
   }
 
-  // 엄지: 미러 모드에서 tip.x > IP.x 이면 옆으로 뻗은 것
-  const thumbExt = lm[4].x > lm[3].x;
+  // 엄지 방향 판정
+  const thumbExt   = lm[4].x > lm[3].x; // 엄지를 옆으로 뻗음 (👍 판정용)
+  const thumbDown  = lm[4].y > lm[2].y + 0.05; // 엄지 끝이 뿌리보다 확실히 아래 (👎 판정용)
+
   const idxExt   = ext(8,  5);
   const midExt   = ext(12, 9);
   const rngExt   = ext(16, 13);
   const pkyExt   = ext(20, 17);
 
-  // 엄지 끝 ↔ 검지 끝 거리 (ok_sign 판정용)
   const okDist = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y);
 
-  // ① ok_sign (👌): 엄지+검지 끝이 가깝고, 중지 이상은 펴져 있음
-  //    → 다른 패턴과 겹치기 전에 먼저 판정
+  // ① ok_sign (👌)
   if (okDist < 0.07 && midExt) return 'ok_sign';
 
-  // ② thumb_up (👍): 엄지 뻗음 + 나머지 4손가락 전부 접힘
-  //    → fist 보다 반드시 먼저 체크 (조건이 fist에 포함되므로)
+  // ⑦ thumb_down (👎) [새로 추가] - 엄지 아래로 + 나머지 접힘
+  if (thumbDown && !idxExt && !midExt && !rngExt && !pkyExt) return 'thumb_down';
+  
+  // ② thumb_up (👍) - 엄지 뻗음 + 나머지 접힘
   if (thumbExt && !idxExt && !midExt && !rngExt && !pkyExt) return 'thumb_up';
 
-  // ③ fist (✊): 4손가락 전부 접힘 (엄지 무관)
+
+  // ③ fist (✊) - 나머지 4손가락 접힘 (엄지 조건들에 안 걸렸을 때 최종 주먹)
   if (!idxExt && !midExt && !rngExt && !pkyExt) return 'fist';
 
-  // ④ open_hand (✋): 4손가락 전부 펴짐
+  // ④ open_hand (✋)
   if (idxExt && midExt && rngExt && pkyExt) return 'open_hand';
-
-  // ⑤ peace (✌️): 검지+중지만 펴짐
+  
+  // ⑤ peace (✌️)
   if (idxExt && midExt && !rngExt && !pkyExt) return 'peace';
 
-  // ⑥ pointing (☝️): 검지만 펴짐
+  // ⑥ pointing (☝️)
   if (idxExt && !midExt && !rngExt && !pkyExt) return 'pointing';
 
   return null;
+
+}
+
+// ─── 제스처 스무딩 (4프레임 히스토리) ───────────────────────────────────────
+// 프레임 간 떨림 제거: 최근 4프레임 중 2회 이상 나타난 제스처만 채택
+const _gestureHistory = [];
+const _HISTORY_LEN = 4;
+
+function smoothGesture(raw) {
+  _gestureHistory.push(raw);
+  if (_gestureHistory.length > _HISTORY_LEN) _gestureHistory.shift();
+  const counts = {};
+  for (const g of _gestureHistory) {
+    if (g != null) counts[g] = (counts[g] || 0) + 1;
+  }
+  let best = null, bestN = 0;
+  for (const [g, n] of Object.entries(counts)) {
+    if (n > bestN) { best = g; bestN = n; }
+  }
+  return bestN >= 2 ? best : null;
 }
 
 function initMediapipe() {
@@ -1470,9 +1614,9 @@ function onHandResults(results) {
     // Draw landmarks
     drawConnectors(landmarkCtx, lm, HAND_CONNECTIONS, {color:'rgba(0,255,128,0.6)', lineWidth:1.5});
     drawLandmarks(landmarkCtx, lm, {color:'rgba(255,200,0,0.9)', lineWidth:1, radius:3});
-    GS.detectedGesture = classifyGesture(lm);
+    GS.detectedGesture = smoothGesture(classifyGesture(lm));
   } else {
-    GS.detectedGesture = null;
+    GS.detectedGesture = smoothGesture(null);
   }
   const dg = document.getElementById('gesture-detect-display');
   if (GS.detectedGesture) {
@@ -1570,6 +1714,9 @@ function getCutsceneLines(type) {
   if (type==='intro') return CUTSCENE_INTRO;
   if (type==='boss_defeat') return CUTSCENE_BOSS_DEFEAT;
   if (type==='ending') return CUTSCENE_ENDING;
+  for (let i=0; i<CUTSCENE_STAGE.length; i++) {
+    if (type===`stage_${i+1}`) return CUTSCENE_STAGE[i];
+  }
   return [];
 }
 
@@ -1608,11 +1755,19 @@ function endCutscene(type) {
   GS.waitingGesture = null;
   if (type==='intro') {
     startStageTitle(0);
+  } else if (type.startsWith('stage_')) {
+    startBattle();
   } else if (type==='boss_defeat') {
     startCutscene('ending');
   } else if (type==='ending') {
     GS.phase = 'credits';
+    setTimeout(captureAndShowCert, 1800);
   }
+}
+
+function startStageCutscene(idx) {
+  document.getElementById('stage-title-overlay').classList.remove('visible');
+  startCutscene(`stage_${idx + 1}`);
 }
 
 function handleAdvanceInput() {
@@ -1630,7 +1785,7 @@ function handleAdvanceInput() {
     // Advance
     showDialogLine(GS.cutsceneType, GS.cutsceneLine + 1);
   } else if (GS.phase === 'stage_title') {
-    startBattle();
+    startStageCutscene(GS.stageIdx);
   } else if (GS.phase === 'stage_clear') {
     nextStage();
   }
@@ -1646,6 +1801,17 @@ function startStageTitle(idx) {
   sto.classList.add('visible');
 }
 
+function generateSequence(stage) {
+  // 인트로(고정) + 랜덤 파트 생성
+  const seq = [...stage.introSequence];
+  const pool = stage.allowedGestures;
+  const remaining = stage.totalBeats - seq.length;
+  for (let i = 0; i < remaining; i++) {
+    seq.push(pool[Math.floor(Math.random() * pool.length)]);
+  }
+  return seq;
+}
+
 function startBattle() {
   document.getElementById('stage-title-overlay').classList.remove('visible');
   const stage = STAGES[GS.stageIdx];
@@ -1654,7 +1820,7 @@ function startBattle() {
   GS.beatsProcessed = 0;
   GS.bpm = stage.bpm;
   GS.beatInterval = 60000 / stage.bpm;
-  GS.lastBeatTime = performance.now() + 500; // brief delay before first beat
+  GS.lastBeatTime = performance.now() + 500;
   GS.enemyHp = stage.enemyHp;
   GS.enemyMaxHp = stage.enemyHp;
   GS.heroAnimState = 'idle';
@@ -1662,6 +1828,7 @@ function startBattle() {
   GS.enemyOffsetX = 0; GS.enemyOffsetY = 0;
   GS.heroOffsetX = 0; GS.heroOffsetY = 0;
   GS.bossPhase = 0;
+  GS.currentSequence = generateSequence(stage);
 }
 
 function nextStage() {
@@ -1701,7 +1868,7 @@ function showFeedback(text, color, duration=700) {
 // ─── BEAT LOGIC ───────────────────────────────────────────────────────────────
 function processBeat(timestamp) {
   const stage = STAGES[GS.stageIdx];
-  const seq = stage.sequence;
+  const seq = GS.currentSequence;
   if (GS.beatIdx >= seq.length) {
     // All beats done
     if (GS.enemyHp > 0) {
@@ -1830,11 +1997,11 @@ function gameLoop(timestamp) {
     updateBeatBar(beatFrac);
 
     // Draw current target
-    const currentGesture = stage.sequence[GS.beatIdx];
+    const currentGesture = GS.currentSequence[GS.beatIdx];
     if (currentGesture) {
       const pulse = GS.beatPulse * Math.max(0, 1 - (timestamp - GS.lastBeatTime) / 150);
       drawTargetGesture(currentGesture, GS.beatPulse > 0.01 ? GS.beatPulse : 0.05 + 0.05*Math.sin(timestamp/400));
-      drawUpcomingGestures(stage.sequence, GS.beatIdx);
+      drawUpcomingGestures(GS.currentSequence, GS.beatIdx);
     }
 
     if (elapsed >= GS.beatInterval) {
@@ -1860,6 +2027,9 @@ function gameLoop(timestamp) {
         {sprite: SPRITES.princess_idle, scale: 1.5, flipX: false},
         {sprite: SPRITES.hero_idle, scale: 1.5, flipX: true}
       );
+    } else if (ct && ct.startsWith('stage_')) {
+      const si = parseInt(ct.split('_')[1]) - 1;
+      drawBackground(STAGES[si] ? STAGES[si].bgType : 'meadow');
     } else {
       drawBackground('meadow');
     }
@@ -1873,7 +2043,7 @@ function gameLoop(timestamp) {
       ctx.fillText('🎉 THE END 🎉', w/2, h*0.3);
       ctx.font='10px "Press Start 2P"';
       ctx.fillStyle='#fff';
-      ctx.fillText('용사가 손가락을 숨김', w/2, h*0.45);
+      ctx.fillText('용사가 말을 숨김', w/2, h*0.45);
       ctx.fillStyle='rgba(255,255,255,0.5)';
       ctx.font='8px "Press Start 2P"';
       ctx.fillText(`FINAL SCORE: ${GS.score}`, w/2, h*0.55);
@@ -1905,7 +2075,7 @@ function gameLoop(timestamp) {
     ctx.fillStyle='#ffd700';
     ctx.font='12px "Press Start 2P"';
     ctx.textAlign='center';
-    ctx.fillText('용사가 손가락을 숨김', w/2, h/2 - 20);
+    ctx.fillText('용사가 말을 숨김', w/2, h/2 - 20);
     ctx.fillStyle='rgba(255,255,255,0.5)';
     ctx.font='8px "Press Start 2P"';
     ctx.fillText('로딩 중... 카메라 허용 필요', w/2, h/2 + 20);
@@ -1917,9 +2087,167 @@ function gameLoop(timestamp) {
   requestAnimationFrame(gameLoop);
 }
 
+// ─── CERTIFICATE (이 부분을 정확히 교체하세요) ──────────────────────────────────
+let certDataUrl = null;
+let userName = "과무칸"; // 전역 변수로 선언
+
+function buildCertQRContent(score, timeStr) {
+  // 인증서 생성 시점에 이름을 물어봄
+  const input = window.prompt("전설의 기록에 남길 용사님의 이름을 입력하세요:", userName);
+  if (input && input.trim() !== "") {
+    userName = input.trim().substring(0, 8);
+  }
+
+  // HTML 내용을 백틱(`)으로 감싸서 userName 변수를 포함
+  const html = `<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box;margin:0;padding:0}body{background:%23080818;color:%23fff;font-family:monospace;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}.c{text-align:center;border:3px solid gold;border-radius:4px;padding:28px 22px;max-width:380px;width:100%}.t{color:gold;font-size:18px;margin-bottom:14px}p{margin:10px 0;font-size:13px}.sc{color:gold;font-size:20px;margin:14px 0}.sub{color:%23aaa;font-size:10px}</style></head><body><div class=c><div class=t>🏆 클리어 인증서</div><p class=sub>용사가 말을 숨김</p><br><p style=font-size:17px>⚔️ 과묵한 용사 ${userName}</p><p>공주를 구하고 세계를 되찾다!</p><p class=sub>마우스도 키보드도 없이 마왕을 물리쳤다</p><br><p class=sc>SCORE: ${score}</p><p class=sub>${timeStr}</p><br><p>✌️ THE SILENT HERO ✌️</p></div></body></html>`;
+  
+  return 'data:text/html;charset=utf-8,' + html;
+}
+// ───────────────────────────────────────────────────────────────────────────────
+
+
+function captureAndShowCert() {
+  const video = document.getElementById('webcam');
+  const certCanvas = document.getElementById('cert-canvas');
+  const cc = certCanvas.getContext('2d');
+  const W = certCanvas.width, H = certCanvas.height;
+
+  // --- 배경 ---
+  cc.fillStyle = '#080818';
+  cc.fillRect(0, 0, W, H);
+
+  // 별 파티클
+  cc.fillStyle = 'rgba(255,255,255,0.7)';
+  for (let i = 0; i < 70; i++) {
+    cc.fillRect(Math.random()*W, Math.random()*H, Math.random()<0.3?2:1, Math.random()<0.3?2:1);
+  }
+
+  // 외부 금테 프레임
+  cc.strokeStyle = '#ffd700';
+  cc.lineWidth = 4;
+  cc.strokeRect(8, 8, W-16, H-16);
+  cc.strokeStyle = 'rgba(255,215,0,0.35)';
+  cc.lineWidth = 1;
+  cc.strokeRect(15, 15, W-30, H-30);
+
+  // 모서리 장식
+  [[22,22],[W-22,22],[22,H-22],[W-22,H-22]].forEach(([cx,cy])=>{
+    cc.fillStyle='#ffd700';
+    cc.fillRect(cx-7,cy-2,14,4); cc.fillRect(cx-2,cy-7,4,14);
+  });
+
+  // 타이틀
+  cc.textAlign='center';
+  cc.fillStyle='#ffd700';
+  cc.shadowBlur=14; cc.shadowColor='#ffd700';
+  cc.font='11px "Press Start 2P"';
+  cc.fillText('용사가 말을 숨김', W/2, 40);
+  cc.shadowBlur=0;
+  cc.fillStyle='rgba(255,255,255,0.55)';
+  cc.font='7px "Press Start 2P"';
+  cc.fillText('CLEAR CERTIFICATE', W/2, 57);
+
+  // --- 웹캠 사진 (미러) ---
+  const pW=210, pH=158, pX=(W-pW)/2, pY=68;
+  cc.save();
+  cc.translate(pX+pW, pY);
+  cc.scale(-1,1);
+  try { cc.drawImage(video, 0, 0, pW, pH); } catch(e){}
+  cc.restore();
+  // 사진 테두리
+  cc.strokeStyle='#ffd700'; cc.lineWidth=2;
+  cc.strokeRect(pX, pY, pW, pH);
+
+  // --- 텍스트 ---
+  const now = new Date();
+  const timeStr = `${String(now.getFullYear())}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}  ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  cc.fillStyle='#fff';
+  cc.font='10px "Press Start 2P"';
+  cc.fillText('과묵한 용사 ${userName}', W/2, pY+pH+22);
+
+  cc.fillStyle='rgba(255,255,255,0.65)';
+  cc.font='7px "Press Start 2P"';
+  cc.fillText('공주를 구하고 세계를 되찾다!', W/2, pY+pH+40);
+
+  cc.fillStyle='#ffd700';
+  cc.font='8px "Press Start 2P"';
+  cc.fillText(`SCORE: ${GS.score}`, W/2, pY+pH+58);
+
+  cc.fillStyle='rgba(255,215,0,0.28)';
+  cc.font='6px "Press Start 2P"';
+  cc.fillText(timeStr, W/2, pY+pH+75);
+
+  cc.fillStyle='rgba(255,255,255,0.3)';
+  cc.font='6px "Press Start 2P"';
+  cc.fillText('✌ THE SILENT HERO ✌', W/2, H-18);
+
+  cc.textAlign='left';
+
+  certDataUrl = certCanvas.toDataURL('image/png');
+
+  // localStorage 저장 (같은 기기 탭에서 QR 열 때 사용)
+  try {
+    localStorage.setItem('hero_cert_img', certDataUrl);
+    localStorage.setItem('hero_cert_score', String(GS.score));
+    localStorage.setItem('hero_cert_time', timeStr);
+  } catch(e){}
+
+  // QR 생성
+  const qrEl = document.getElementById('cert-qr');
+  qrEl.innerHTML = '';
+  const qrText = buildCertQRContent(GS.score, timeStr);
+  try {
+    new QRCode(qrEl, {
+      text: qrText,
+      width: 160, height: 160,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.L,
+    });
+  } catch(e) {
+    qrEl.innerHTML = '<div style="color:#fff;font-size:8px;width:160px;text-align:center;padding:10px;">QR 생성 실패<br>저장 버튼을 이용하세요</div>';
+  }
+
+  document.getElementById('cert-overlay').classList.add('visible');
+}
+
+function downloadCert() {
+  if (!certDataUrl) return;
+  const a = document.createElement('a');
+  a.href = certDataUrl;
+  a.download = '과묵한용사_${userName}_클리어인증서.png';
+  a.click();
+}
+
+function restartFromCert() {
+  document.getElementById('cert-overlay').classList.remove('visible');
+  certDataUrl = null;
+  restartGame();
+}
+
+// #view-cert 해시 라우팅 — QR 스캔 후 같은 기기에서 열 때
+// 인증서 모드이면 true 반환 (게임 init 중단)
+function checkCertView() {
+  if (window.location.hash !== '#view-cert') return false;
+  const img = localStorage.getItem('hero_cert_img');
+  const score = localStorage.getItem('hero_cert_score') || '';
+  const time = localStorage.getItem('hero_cert_time') || '';
+  if (!img) return false;
+  document.body.innerHTML = `
+    <div style="background:#080818;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:'Press Start 2P',monospace;padding:20px;box-sizing:border-box;">
+      <div style="color:#ffd700;font-size:16px;text-shadow:0 0 20px #ffd700;">🏆 클리어 인증서</div>
+      <img src="${img}" style="max-width:90vw;max-height:65vh;border:3px solid #ffd700;box-shadow:0 0 30px rgba(255,215,0,0.5);">
+      <div style="color:#fff;font-size:10px;text-align:center;">과묵한 용사 ${userName}<br><span style="color:rgba(255,255,255,0.5);font-size:8px;">${time} · SCORE ${score}</span></div>
+      <a href="${img}" download="과묵한용사_${userName}_클리어인증서.png" style="color:#4ade80;font-size:10px;text-decoration:none;border:2px solid #4ade80;padding:10px 18px;">📥 저장하기</a>
+      <div style="color:rgba(255,255,255,0.3);font-size:7px;">용사가 말을 숨김</div>
+    </div>`;
+  return true;
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
-  // Show loading briefly, then start intro
+  if (checkCertView()) return; // QR 스캔 후 인증서 보기 모드
   GS.phase = 'loading';
   initMediapipe();
   setTimeout(()=>{
@@ -1932,3 +2260,4 @@ init();
 </script>
 </body>
 </html>
+index.html
