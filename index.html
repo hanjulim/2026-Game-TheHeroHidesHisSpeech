@@ -1241,7 +1241,7 @@ function drawCharacterSprite(ctx, characterKey, fallbackSprite, x, y, scale, fli
   const boxH = fallbackSprite.h * PIXEL * scale;
   const img = ASSETS.characters[characterKey];
   if (img) {
-    return drawImageInBox(ctx, img, x, y, boxW, boxH, {flipX, tintWhite, alignX:'center', alignY:'bottom'});
+    return drawImageInBox(ctx, img, x, y, boxW, boxH, {flipX: !flipX, tintWhite, alignX:'center', alignY:'bottom'});
   }
   drawSprite(ctx, fallbackSprite, x, y, scale, flipX, tintWhite);
   return {x, y, w: boxW, h: boxH};
