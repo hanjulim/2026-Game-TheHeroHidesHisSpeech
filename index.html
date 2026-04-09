@@ -461,6 +461,7 @@
 'use strict';
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const PIXEL = 4;
+const CHARACTER_RENDER_SCALE = 1.5;
 const ASSET_PATHS = {
   backgrounds: {
     meadow: './assets/sprites/backgrounds/meadow.png',
@@ -471,8 +472,11 @@ const ASSET_PATHS = {
     royal_throne_room: './assets/sprites/backgrounds/royal_throne_room.png',
   },
   characters: {
-    hero: './assets/sprites/character/hero_256.png',
-    slime: './assets/sprites/character/slime_256.png',
+    hero: './assets/sprites/character/hero_idle_256.png',
+    hero_attacking: './assets/sprites/character/hero_attacking_256.png',
+    slime: './assets/sprites/character/slime_1_256.png',
+    slime_1: './assets/sprites/character/slime_1_256.png',
+    slime_2: './assets/sprites/character/slime_2_256.png',
     goblin: './assets/sprites/character/goblin_256.png',
     orc: './assets/sprites/character/orc_256.png',
     demon: './assets/sprites/character/demon_256.png',
@@ -1532,25 +1536,27 @@ function drawBattleScene(stage, timestamp) {
   const heroSprite = GS.heroAnimState==='attack' ? SPRITES.hero_attack
                    : GS.heroAnimState==='hurt'   ? SPRITES.hero_hurt
                    : SPRITES.hero_idle;
-  const heroScale = 1.5;
+  const heroCharacterKey = GS.heroAnimState==='attack' ? 'hero_attacking' : 'hero';
+  const heroScale = 1.5 * CHARACTER_RENDER_SCALE;
   const heroW = heroSprite.w * PIXEL * heroScale;
   const heroH = heroSprite.h * PIXEL * heroScale;
   const baseHeroX = w * 0.15;
   const hx = baseHeroX + GS.heroOffsetX;
   const hy = groundY - heroH + GS.heroOffsetY + Math.sin(GS.idleWobble * Math.PI * 2) * 3;
-  drawCharacterSprite(ctx, 'hero', heroSprite, hx, hy, heroScale, false, false);
+  drawCharacterSprite(ctx, heroCharacterKey, heroSprite, hx, hy, heroScale, false, false);
 
   // Enemy
   const enemySprite = getEnemySprite(stage.enemy);
-  const enemyScale = stage.enemy==='demonlord' ? 2.0
+  const enemyCharacterKey = stage.enemy==='slime' ? (GS.idleWobble>0.5 ? 'slime_2' : 'slime_1') : stage.enemy;
+  const enemyScale = (stage.enemy==='demonlord' ? 2.0
                    : stage.enemy==='orc'||stage.enemy==='demon' ? 1.8
-                   : 1.5;
+                   : 1.5) * CHARACTER_RENDER_SCALE;
   const enemyW = enemySprite.w * PIXEL * enemyScale;
   const enemyH = enemySprite.h * PIXEL * enemyScale;
   const baseEnemyX = w * 0.65;
   const ex = baseEnemyX + GS.enemyOffsetX;
   const ey = groundY - enemyH + GS.enemyOffsetY + Math.sin((GS.idleWobble + 0.5) * Math.PI * 2) * 2;
-  const enemyRect = drawCharacterSprite(ctx, stage.enemy, enemySprite, ex, ey, enemyScale, true, GS.enemyFlash);
+  const enemyRect = drawCharacterSprite(ctx, enemyCharacterKey, enemySprite, ex, ey, enemyScale, true, GS.enemyFlash);
 
   // HP bars
   drawEnemyHpBar(enemyRect.x, enemyRect.y-20, enemyRect.w, stage);
@@ -1564,14 +1570,14 @@ function drawThroneScene(charLeft, charRight, bgType='royal_throne_room') {
 
   if (charLeft) {
     const sp = charLeft.sprite;
-    const sc = charLeft.scale || 1.5;
+    const sc = (charLeft.scale || 1.5) * CHARACTER_RENDER_SCALE;
     const cw = sp.w * PIXEL * sc;
     const ch = sp.h * PIXEL * sc;
     drawCharacterSprite(ctx, charLeft.key, sp, w*0.2 - cw/2, groundY - ch, sc, charLeft.flipX||false);
   }
   if (charRight) {
     const sp = charRight.sprite;
-    const sc = charRight.scale || 1.5;
+    const sc = (charRight.scale || 1.5) * CHARACTER_RENDER_SCALE;
     const cw = sp.w * PIXEL * sc;
     const ch = sp.h * PIXEL * sc;
     drawCharacterSprite(ctx, charRight.key, sp, w*0.7 - cw/2, groundY - ch, sc, charRight.flipX||false);
