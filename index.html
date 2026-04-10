@@ -14,8 +14,9 @@
     --accent: #ffd700;
   }
   @font-face {
-    font-family: 'DungGeunMo'; 
-    src: url('assets/DungGeunMo.otf') format('opentype'); /* 파일 경로와 형식 */
+    font-family: 'DungGeunMo';
+    src: url('assets/font/DungGeunMo.woff2') format('woff2'),
+         url('assets/DungGeunMo.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
   }
@@ -259,8 +260,8 @@
   }
   #dialog-box.visible { display: flex; align-items: flex-start; gap: 14px; }
   #dialog-portrait {
-    width: 88px;
-    height: 88px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
     object-position: top center;
     border: 2px solid #f1c40f;
@@ -1537,11 +1538,19 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
   const speaker = line ? (line.speaker || '') : '';
 
   // 인트로 / 엔딩 : 왕좌 방 + 왕 + 용사 (용사만 yOff)
-  if (cutsceneType === 'intro' || cutsceneType === 'ending') {
+  if (cutsceneType === 'intro') {
     return {
       bgType: 'royal_throne_room',
       charLeft:  {key:'king', sprite:SPRITES.king_idle, scale:1.5, flipX:false},
       charRight: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:true,  yOff:25},
+    };
+  }
+  if (cutsceneType === 'ending') {
+    return {
+      bgType: 'royal_throne_room',
+      charLeft:   {key:'king',     sprite:SPRITES.king_idle,     scale:1.5, flipX:false},
+      charRight2: {key:'princess', sprite:SPRITES.princess_idle, scale:1.5, flipX:true,  yOff:25},
+      charRight:  {key:'hero',     sprite:SPRITES.hero_idle,     scale:1.5, flipX:true,  yOff:25},
     };
   }
 
@@ -1553,7 +1562,7 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
       charLeft: showDemonlord
         ? {key:'demonlord', sprite:SPRITES.demonlord_idle, scale:2.0, flipX:false, yOff:30}
         : {key:'princess',  sprite:SPRITES.princess_idle,  scale:1.5, flipX:false, yOff:30},
-      charRight: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:true, yOff:35},
+      charRight: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:true, yOff:43},
     };
   }
 
@@ -1570,7 +1579,7 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
     if (si === 0) { // meadow
       return {
         bgType: stage.bgType,
-        charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:-10},
+        charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:-2},
         charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:-10},
       };
     }
@@ -1578,13 +1587,13 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
       return {
         bgType: stage.bgType,
         charLeft:  {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:false, yOff:30},
-        charRight: {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:true,  yOff:35},
+        charRight: {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:true,  yOff:43},
       };
     }
     // stage 2~4
     return {
       bgType: stage.bgType,
-      charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:25},
+      charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:33},
       charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:25},
     };
   }
@@ -1596,7 +1605,7 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
 // 캔버스 상단 areaH 픽셀 안에 배경 + 캐릭터를 그린다
 function drawCutsceneSceneArea(config, areaH) {
   const w = canvas.width;
-  const {bgType, charLeft, charRight} = config;
+  const {bgType, charLeft, charRight, charRight2} = config;
 
   // 배경 이미지를 areaH 영역에 맞춰 cover 방식으로 렌더
   const bgImg = ASSETS.backgrounds[bgType];
@@ -1627,6 +1636,13 @@ function drawCutsceneSceneArea(config, areaH) {
     const cw = sp.w * PIXEL * sc;
     const ch = sp.h * PIXEL * sc;
     drawCharacterSprite(ctx, charRight.key, sp, w * 0.75 - cw / 2, groundY - ch + (charRight.yOff || 0), sc, charRight.flipX || false);
+  }
+  if (charRight2) {
+    const sp = charRight2.sprite;
+    const sc = (charRight2.scale || 1.5) * CHARACTER_RENDER_SCALE;
+    const cw = sp.w * PIXEL * sc;
+    const ch = sp.h * PIXEL * sc;
+    drawCharacterSprite(ctx, charRight2.key, sp, w * 0.63 - cw / 2, groundY - ch + (charRight2.yOff || 0), sc, charRight2.flipX || false);
   }
 }
 
