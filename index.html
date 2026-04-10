@@ -1548,9 +1548,10 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
   if (cutsceneType === 'ending') {
     return {
       bgType: 'royal_throne_room',
-      charLeft:   {key:'king',     sprite:SPRITES.king_idle,     scale:1.5, flipX:false},
-      charRight2: {key:'princess', sprite:SPRITES.princess_idle, scale:1.5, flipX:true,  yOff:25},
-      charRight:  {key:'hero',     sprite:SPRITES.hero_idle,     scale:1.5, flipX:true,  yOff:25},
+      flipBg: true,
+      charLeft:  {key:'hero',     sprite:SPRITES.hero_idle,     scale:1.5, flipX:false, yOff:25},
+      charLeft2: {key:'princess', sprite:SPRITES.princess_idle, scale:1.5, flipX:false, yOff:25},
+      charRight: {key:'king',     sprite:SPRITES.king_idle,     scale:1.5, flipX:true},
     };
   }
 
@@ -1559,10 +1560,11 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
     const showDemonlord = speaker.includes('마왕') || speaker.includes('👿');
     return {
       bgType: 'demonlord_throne_room',
-      charLeft: showDemonlord
-        ? {key:'demonlord', sprite:SPRITES.demonlord_idle, scale:2.0, flipX:false, yOff:30}
-        : {key:'princess',  sprite:SPRITES.princess_idle,  scale:1.5, flipX:false, yOff:30},
-      charRight: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:true, yOff:43},
+      flipBg: true,
+      charLeft: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:false, yOff:43},
+      charRight: showDemonlord
+        ? {key:'demonlord', sprite:SPRITES.demonlord_idle, scale:2.0, flipX:true, yOff:30}
+        : {key:'princess',  sprite:SPRITES.princess_idle,  scale:1.5, flipX:true, yOff:30},
     };
   }
 
@@ -1586,8 +1588,9 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
     if (si === 4) { // demonlord 스테이지: 마왕 좌측(왕좌), 용사 우측
       return {
         bgType: stage.bgType,
-        charLeft:  {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:false, yOff:30},
-        charRight: {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:true,  yOff:43},
+        flipBg: true,
+        charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:43},
+        charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:30},
       };
     }
     // stage 2~4
@@ -1605,10 +1608,11 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
 // 캔버스 상단 areaH 픽셀 안에 배경 + 캐릭터를 그린다
 function drawCutsceneSceneArea(config, areaH) {
   const w = canvas.width;
-  const {bgType, charLeft, charRight, charRight2} = config;
+  const {bgType, charLeft, charLeft2, charRight, charRight2, flipBg} = config;
 
   // 배경 이미지를 areaH 영역에 맞춰 cover 방식으로 렌더
   const bgImg = ASSETS.backgrounds[bgType];
+  if (flipBg) { ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1); }
   if (bgImg) {
     const scale = Math.max(w / bgImg.naturalWidth, areaH / bgImg.naturalHeight);
     const dw = bgImg.naturalWidth  * scale;
@@ -1617,6 +1621,7 @@ function drawCutsceneSceneArea(config, areaH) {
   } else {
     drawBackground(bgType); // 폴백 (clip 범위 안에서만 렌더됨)
   }
+  if (flipBg) ctx.restore();
 
   // areaH 기준 지면 Y
   const groundY = areaH * getGroundYFrac(bgType);
@@ -1629,6 +1634,13 @@ function drawCutsceneSceneArea(config, areaH) {
     const cx = w * 0.22 - cw / 2;
     const cy = groundY - ch + (charLeft.yOff || 0);
     drawCharacterSprite(ctx, charLeft.key, sp, cx, cy, sc, charLeft.flipX || false);
+  }
+  if (charLeft2) {
+    const sp = charLeft2.sprite;
+    const sc = (charLeft2.scale || 1.5) * CHARACTER_RENDER_SCALE;
+    const cw = sp.w * PIXEL * sc;
+    const ch = sp.h * PIXEL * sc;
+    drawCharacterSprite(ctx, charLeft2.key, sp, w * 0.37 - cw / 2, groundY - ch + (charLeft2.yOff || 0), sc, charLeft2.flipX || false);
   }
   if (charRight) {
     const sp = charRight.sprite;
@@ -1661,7 +1673,13 @@ function getEnemySprite(enemyType, animState) {
 // ─── DRAW BATTLE SCENE ───────────────────────────────────────────────────────
 function drawBattleScene(stage, timestamp) {
   const w=canvas.width, h=canvas.height;
-  drawBackground(stage.bgType);
+  if (stage.enemy === 'demonlord') {
+    ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1);
+    drawBackground(stage.bgType);
+    ctx.restore();
+  } else {
+    drawBackground(stage.bgType);
+  }
 
   const groundY = getGroundY(stage.bgType);
 
@@ -1681,10 +1699,10 @@ function drawBattleScene(stage, timestamp) {
   const enemyYOff = isMeadow ? -10 : (isDemonlordBattle ? 30 : 25);
 
   // 마왕 전투: 좌측에 마왕(왕좌), 우측에 용사
-  const baseHeroX  = isDemonlordBattle ? w * 0.65 : w * 0.15;
-  const baseEnemyX = isDemonlordBattle ? w * 0.15 : w * 0.65;
-  const heroFlipX  = isDemonlordBattle;   // 우측 용사는 왼쪽을 바라봄
-  const enemyFlipX = !isDemonlordBattle;  // 좌측 마왕은 오른쪽을 바라봄
+  const baseHeroX  = w * 0.15;  // 용사 항상 좌측
+  const baseEnemyX = w * 0.65;  // 적 항상 우측
+  const heroFlipX  = false;
+  const enemyFlipX = true;
 
   const hx = baseHeroX + GS.heroOffsetX;
   const hy = groundY - heroH + heroYOff + GS.heroOffsetY + Math.sin(GS.idleWobble * Math.PI * 2) * 3;
