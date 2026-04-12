@@ -1937,7 +1937,8 @@ function drawCutsceneSceneArea(config, areaH) {
     const kmImg = ASSETS.items && ASSETS.items.keyboardmouse;
     if (kmImg) {
       const kmSize = 72;
-      ctx.drawImage(kmImg, w * 0.75 + 20, groundY - kmSize * 0.6, kmSize, kmSize);
+      // 공주 중심 x ≈ w*0.75, 좌측 2cm(75px) 앞, 1cm(38px) 아래
+      ctx.drawImage(kmImg, w * 0.75 - kmSize - 75, groundY - kmSize * 0.6 + 38, kmSize, kmSize);
     }
   }
 }
@@ -1970,7 +1971,8 @@ function updateHud() {
   document.getElementById('score-display').textContent = `SCORE: ${GS.score}`;
   // Combo
   const cd = document.getElementById('combo-display');
-  if (GS.combo >= 3) {
+  const inBattle = GS.phase === 'battle' || GS.phase === 'battle_ending';
+  if (GS.combo >= 3 && inBattle) {
     cd.textContent = `${GS.combo} COMBO!!`;
     cd.style.opacity = '1';
   } else {
@@ -2675,15 +2677,15 @@ function captureAndShowCert() {
   cc.textAlign='center';
   cc.fillStyle='#ffd700';
   cc.shadowBlur=14; cc.shadowColor='#ffd700';
-  cc.font='14px "DungGeunMo", monospace';
-  cc.fillText('제스처 RPG: 용사가 무기를 뺏김', W/2, 38);
+  cc.font='16px "DungGeunMo", monospace';
+  cc.fillText('제스처 RPG: 용사가 무기를 뺏김', W/2, 36);
   cc.shadowBlur=0;
   cc.fillStyle='rgba(255,255,255,0.55)';
-  cc.font='7px "DungGeunMo"';
+  cc.font='11px "DungGeunMo"';
   cc.fillText('CLEAR CERTIFICATE', W/2, 54);
 
   // --- 웹캠 사진 (미러) ---
-  const pW=210, pH=158, pX=(W-pW)/2, pY=68;
+  const pW=210, pH=148, pX=(W-pW)/2, pY=66;
   cc.save();
   cc.translate(pX+pW, pY);
   cc.scale(-1,1);
@@ -2698,24 +2700,24 @@ function captureAndShowCert() {
   const timeStr = `${String(now.getFullYear())}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}  ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
   cc.fillStyle='#fff';
-  cc.font='12px "DungGeunMo", monospace';
-  cc.fillText(`과묵한 용사 ${userName}`, W/2, pY+pH+24);
+  cc.font='15px "DungGeunMo", monospace';
+  cc.fillText(`과묵한 용사 ${userName}`, W/2, pY+pH+22);
 
-  cc.fillStyle='rgba(255,255,255,0.65)';
-  cc.font='11px "DungGeunMo", monospace';
-  cc.fillText('무기 없이 마왕을 물리쳤다!', W/2, pY+pH+44);
+  cc.fillStyle='rgba(255,255,255,0.75)';
+  cc.font='13px "DungGeunMo", monospace';
+  cc.fillText('무기 없이 마왕을 물리쳤다!', W/2, pY+pH+40);
 
   cc.fillStyle='#ffd700';
-  cc.font='8px "DungGeunMo"';
-  cc.fillText(`SCORE: ${GS.score}`, W/2, pY+pH+64);
+  cc.font='13px "DungGeunMo"';
+  cc.fillText(`SCORE: ${GS.score}`, W/2, pY+pH+60);
 
-  cc.fillStyle='rgba(255,215,0,0.6)';
-  cc.font='7px "DungGeunMo"';
-  cc.fillText(timeStr, W/2, pY+pH+82);
+  cc.fillStyle='rgba(255,215,0,0.85)';
+  cc.font='11px "DungGeunMo"';
+  cc.fillText(timeStr, W/2, pY+pH+78);
 
-  cc.fillStyle='rgba(255,255,255,0.3)';
-  cc.font='6px "DungGeunMo"';
-  cc.fillText('✌ THE SILENT HERO ✌', W/2, H-20);
+  cc.fillStyle='rgba(255,255,255,0.7)';
+  cc.font='11px "DungGeunMo"';
+  cc.fillText('✌ THE SILENT HERO ✌', W/2, H-16);
 
   cc.textAlign='left';
 
