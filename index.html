@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>제스처 RPG:용사가 무기를 뺏김</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0a0f;
@@ -14,15 +13,17 @@
     --accent: #ffd700;
   }
   @font-face {
-    font-family: 'DungGeunMo'; 
-    src: url('assets/DungGeunMo.otf') format('opentype'); /* 파일 경로와 형식 */
+    font-family: 'DungGeunMo';
+    src: url('assets/font/DungGeunMo.woff2') format('woff2'),
+         url('assets/DungGeunMo.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
+    font-display: block;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
-    font-family: 'DungGeunMo', 'Press Start 2P', monospace !important;
+    font-family: 'DungGeunMo', 'DungGeunMo', monospace !important;
     color: #fff;
     overflow: hidden;
     width: 100vw;
@@ -219,7 +220,7 @@
     position: absolute;
     top: 45%; left: 30%;
     transform: translate(-50%,-50%);
-    font-size: 42px;
+    font-size: 26px;
     text-shadow: 0 0 20px currentColor;
     opacity: 0;
     pointer-events: none;
@@ -366,7 +367,7 @@
   #cert-canvas { border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255,215,0,0.4); display: block; }
   #cert-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
   .cert-btn {
-    font-family: 'Press Start 2P', monospace;
+    font-family: 'DungGeunMo', monospace;
     font-size: 10px;
     padding: 12px 18px;
     background: transparent;
@@ -1232,7 +1233,7 @@ const BGM = (() => {
     stop();
     _audio = new Audio(src);
     _audio.loop = loop;
-    _audio.volume = 0.45;
+    _audio.volume = 0.225;
     _audio.play().catch(() => {});
     _src = src;
   }
@@ -1778,15 +1779,6 @@ function drawBattleScene(stage, timestamp) {
   const ex = baseEnemyX + GS.enemyOffsetX;
   const ey = groundY - enemyH + 75 + GS.enemyOffsetY + Math.sin((GS.idleWobble + 0.5) * Math.PI * 2) * 2;
 
-  // 마왕 스테이지: 키보드·마우스 아이템을 마왕 등 뒤(우측) 발치에 배치
-  if (stage.enemy === 'demonlord') {
-    const kmImg = ASSETS.items && ASSETS.items.keyboardmouse;
-    if (kmImg) {
-      const kmSize = 80;
-      ctx.drawImage(kmImg, ex + enemyW * 0.35, groundY - kmSize * 0.55, kmSize, kmSize);
-    }
-  }
-
   const enemyRect = drawCharacterSprite(ctx, enemyCharacterKey, enemySprite, ex, ey, enemyScale, true, GS.enemyFlash);
 
   // HP bars
@@ -1863,6 +1855,7 @@ function getCutsceneSceneConfig(cutsceneType, lineIdx) {
       charRight: showDemonlord
         ? {key:'demonlord', sprite:SPRITES.demonlord_idle, scale:2.0, flipX:true, yOff:30}
         : {key:'princess',  sprite:SPRITES.princess_idle,  scale:1.5, flipX:true, yOff:30},
+      itemRight: showDemonlord ? null : 'keyboardmouse',
     };
   }
   if (cutsceneType && cutsceneType.startsWith('stage_')) {
@@ -1939,6 +1932,14 @@ function drawCutsceneSceneArea(config, areaH) {
     const cw = sp.w * PIXEL * sc, ch = sp.h * PIXEL * sc;
     drawCharacterSprite(ctx, charRight2.key, sp, w*0.63 - cw/2, groundY - ch + (charRight2.yOff||0), sc, charRight2.flipX||false);
   }
+  // 공주 옆 키보드·마우스 아이템
+  if (config.itemRight === 'keyboardmouse') {
+    const kmImg = ASSETS.items && ASSETS.items.keyboardmouse;
+    if (kmImg) {
+      const kmSize = 72;
+      ctx.drawImage(kmImg, w * 0.75 + 20, groundY - kmSize * 0.6, kmSize, kmSize);
+    }
+  }
 }
 
 function drawEnemyHpBar(ex, ey, ew, stage) {
@@ -1955,7 +1956,7 @@ function drawEnemyHpBar(ex, ey, ew, stage) {
   ctx.lineWidth = 1;
   ctx.strokeRect(bx, ey, barW, barH);
   ctx.fillStyle = '#fff';
-  ctx.font = '6px "Press Start 2P"';
+  ctx.font = '6px "DungGeunMo"';
   ctx.textAlign = 'left';
   ctx.fillText(stage.enemyName, bx, ey - 4);
 }
@@ -2526,6 +2527,7 @@ function gameLoop(timestamp) {
     if (ag === GS.waitingGesture) {
       // also check typewriter done
       if (GS.typewriterIdx >= GS.typewriterFull.length) {
+        SFX.play(SFX_PATHS.gestureSuccess);
         GS.waitingGesture = null;
         document.getElementById('dialog-gesture-hint').style.display = 'none';
         document.getElementById('dialog-continue').style.display = 'block';
@@ -2578,17 +2580,17 @@ function gameLoop(timestamp) {
     if (GS.phase === 'credits') {
       ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.fillRect(0, 0, w, sceneH);
       ctx.fillStyle='#ffd700';
-      ctx.font='20px "Press Start 2P"';
+      ctx.font='20px "DungGeunMo"';
       ctx.textAlign='center';
       ctx.fillText('🎉 THE END 🎉', w/2, sceneH*0.38);
       ctx.font='13px "DungGeunMo", monospace';
       ctx.fillStyle='#fff';
       ctx.fillText('제스처 RPG: 용사가 무기를 뺏김', w/2, sceneH*0.56);
       ctx.fillStyle='rgba(255,255,255,0.5)';
-      ctx.font='8px "Press Start 2P"';
+      ctx.font='8px "DungGeunMo"';
       ctx.fillText(`FINAL SCORE: ${GS.score}`, w/2, sceneH*0.70);
       ctx.fillStyle='rgba(255,255,255,0.3)';
-      ctx.font='7px "Press Start 2P"';
+      ctx.font='7px "DungGeunMo"';
       ctx.fillText('→ 키로 다시 시작', w/2, sceneH*0.84);
       ctx.textAlign='left';
     }
@@ -2613,11 +2615,11 @@ function gameLoop(timestamp) {
     const w=canvas.width, h=canvas.height;
     ctx.fillStyle='#0a0a0f'; ctx.fillRect(0,0,w,h);
     ctx.fillStyle='#ffd700';
-    ctx.font='12px "Press Start 2P"';
+    ctx.font='20px "DungGeunMo", monospace';
     ctx.textAlign='center';
-    ctx.fillText('용사가 말을 숨김', w/2, h/2 - 20);
+    ctx.fillText('제스처 RPG:용사가 무기를 뺏김', w/2, h/2 - 20);
     ctx.fillStyle='rgba(255,255,255,0.5)';
-    ctx.font='8px "Press Start 2P"';
+    ctx.font='14px "DungGeunMo", monospace';
     ctx.fillText('로딩 중... 카메라 허용 필요', w/2, h/2 + 20);
     ctx.fillText('키보드: SPACE로 시작', w/2, h/2 + 40);
     ctx.textAlign='left';
@@ -2677,7 +2679,7 @@ function captureAndShowCert() {
   cc.fillText('제스처 RPG: 용사가 무기를 뺏김', W/2, 38);
   cc.shadowBlur=0;
   cc.fillStyle='rgba(255,255,255,0.55)';
-  cc.font='7px "Press Start 2P"';
+  cc.font='7px "DungGeunMo"';
   cc.fillText('CLEAR CERTIFICATE', W/2, 54);
 
   // --- 웹캠 사진 (미러) ---
@@ -2704,15 +2706,15 @@ function captureAndShowCert() {
   cc.fillText('무기 없이 마왕을 물리쳤다!', W/2, pY+pH+44);
 
   cc.fillStyle='#ffd700';
-  cc.font='8px "Press Start 2P"';
+  cc.font='8px "DungGeunMo"';
   cc.fillText(`SCORE: ${GS.score}`, W/2, pY+pH+64);
 
   cc.fillStyle='rgba(255,215,0,0.6)';
-  cc.font='7px "Press Start 2P"';
+  cc.font='7px "DungGeunMo"';
   cc.fillText(timeStr, W/2, pY+pH+82);
 
   cc.fillStyle='rgba(255,255,255,0.3)';
-  cc.font='6px "Press Start 2P"';
+  cc.font='6px "DungGeunMo"';
   cc.fillText('✌ THE SILENT HERO ✌', W/2, H-20);
 
   cc.textAlign='left';
