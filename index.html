@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>용사가 말을 숨김</title>
+<title>제스처 RPG:용사가 무기를 뺏김</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -14,9 +14,8 @@
     --accent: #ffd700;
   }
   @font-face {
-    font-family: 'DungGeunMo';
-    src: url('assets/font/DungGeunMo.woff2') format('woff2'),
-         url('assets/DungGeunMo.otf') format('opentype');
+    font-family: 'DungGeunMo'; 
+    src: url('assets/DungGeunMo.otf') format('opentype'); /* 파일 경로와 형식 */
     font-weight: normal;
     font-style: normal;
   }
@@ -203,13 +202,13 @@
     justify-content: space-between;
     align-items: flex-start;
   }
-  #hp-display { font-size: 10px; line-height: 1.8; }
-  #score-display { font-size: 9px; text-align: right; color: #ffd700; }
+  #hp-display { font-size: 22px; line-height: 1.8; }
+  #score-display { font-size: 20px; text-align: right; color: #ffd700; }
   #combo-display {
     position: absolute;
     top: 60px; left: 50%;
     transform: translateX(-50%);
-    font-size: 14px;
+    font-size: 28px;
     color: #f97316;
     text-shadow: 0 0 20px #f97316;
     opacity: 0;
@@ -220,7 +219,7 @@
     position: absolute;
     top: 45%; left: 30%;
     transform: translate(-50%,-50%);
-    font-size: 18px;
+    font-size: 42px;
     text-shadow: 0 0 20px currentColor;
     opacity: 0;
     pointer-events: none;
@@ -246,7 +245,7 @@
   #stage-narrative { font-size: 16px; color: #fff; text-align: center; max-width: 80%; line-height: 2.4; }
   #stage-start-hint { font-size: 13px; color: rgba(255,255,255,0.5); animation: blink 1s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  /* Cutscene dialog */
+  /* Cutscene dialog — 하단 30% 고정 바 */
   #dialog-box {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -257,6 +256,7 @@
     z-index: 30;
     display: none;
     overflow-y: auto;
+    box-sizing: border-box;
   }
   #dialog-box.visible { display: flex; align-items: flex-start; gap: 14px; }
   #dialog-portrait {
@@ -364,7 +364,7 @@
     justify-content: center;
   }
   #cert-canvas { border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255,215,0,0.4); display: block; }
-#cert-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  #cert-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
   .cert-btn {
     font-family: 'Press Start 2P', monospace;
     font-size: 10px;
@@ -374,12 +374,73 @@
   }
   #cutscene-text {
     font-family: 'DungGeunMo', monospace;
-    line-height: 1.5; 
+    line-height: 1.5;
     font-size: 20px;
+  }
+  #warning-overlay, #title-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    cursor: pointer;
+  }
+  #title-overlay { display: none; }
+  #warning-content {
+    max-width: 560px;
+    width: 90%;
+    color: #fff;
+    font-family: 'DungGeunMo', monospace;
+    text-align: center;
+    line-height: 2;
+  }
+  #warning-content h2 {
+    font-size: 22px;
+    color: #ffd700;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+  #warning-content p {
+    font-size: 15px;
+    margin: 10px 0;
+    color: rgba(255,255,255,0.88);
+  }
+  #warning-content strong { color: #ffd700; }
+  #warning-click-hint {
+    margin-top: 36px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    animation: blink 1.4s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  #title-overlay img {
+    max-width: 72%;
+    max-height: 65%;
+    object-fit: contain;
   }
 </style>
 </head>
 <body>
+
+<!-- 주의사항 화면 -->
+<div id="warning-overlay">
+  <div id="warning-content">
+    <h2>[ 주의사항 ]</h2>
+    <p>이 게임은 마우스나 키보드 대신<br><strong>사용자의 제스처(손 움직임)</strong>를 인식하여 진행되는<br>전시용 게임물입니다.</p>
+    <p>원활한 플레이를 위해 <strong>카메라 권한</strong>을 허용해 주세요.</p>
+    <p>밝은 곳에서 손이 카메라에 잘 보이도록 위치해 주세요.</p>
+    <p>주변 사람과의 충돌에 주의하며 안전하게 즐겨주시기 바랍니다.</p>
+    <div id="warning-click-hint">[ 화면을 클릭하여 소리를 활성화하세요 ]</div>
+  </div>
+</div>
+
+<!-- 타이틀 화면 -->
+<div id="title-overlay">
+  <img src="assets/title/title_image.png" alt="제스처 RPG: 용사가 무기를 뺏김">
+</div>
+
 <div id="app">
   <div id="left-panel">
     <canvas id="game-canvas"></canvas>
@@ -451,7 +512,7 @@
 <div id="cert-overlay">
   <div id="cert-title-text">🏆 클리어 인증서</div>
   <div id="cert-main-row">
-    <canvas id="cert-canvas" width="480" height="320"></canvas>
+    <canvas id="cert-canvas" width="480" height="360"></canvas>
   </div>
   <div id="cert-actions">
     <button class="cert-btn" style="border:2px solid #ffd700;color:#ffd700;" onclick="downloadCert()">📥 저장하기</button>
@@ -491,6 +552,15 @@ const ASSET_PATHS = {
     princess: './assets/sprites/character/princess_256.png',
     king: './assets/sprites/character/king_256.png',
   },
+  items: {
+    keyboardmouse: './assets/sprites/character/keyboardmouse 256.png',
+  },
+  illustrations: {
+    hero:      './assets/sprites/illustration/hero_illust_512.png',
+    king:      './assets/sprites/illustration/king_illust_512.png',
+    princess:  './assets/sprites/illustration/princess_illust_512.png',
+    demonlord: './assets/sprites/illustration/demonlord_illust_256.png',
+  },
   gestures: {
     fist: './assets/sprites/gesture/fist_256.png',
     open_hand: './assets/sprites/gesture/open_hand_256.png',
@@ -500,19 +570,14 @@ const ASSET_PATHS = {
     thumb_up: './assets/sprites/gesture/thumb_up_256.png',
     thumb_down: './assets/sprites/gesture/thumb_down_256.png',
   },
-  illustrations: {
-    hero:      './assets/sprites/illustration/hero_illust_512.png',
-    king:      './assets/sprites/illustration/king_illust_512.png',
-    princess:  './assets/sprites/illustration/princess_illust_512.png',
-    demonlord: './assets/sprites/illustration/demonlord_illust_256.png',
-  },
 };
 
 const ASSETS = {
   backgrounds: {},
   characters: {},
-  gestures: {},
+  items: {},
   illustrations: {},
+  gestures: {},
 };
 
 function loadImage(src) {
@@ -538,8 +603,9 @@ async function loadAssets() {
   await Promise.all([
     loadAssetGroup(ASSETS.backgrounds, ASSET_PATHS.backgrounds),
     loadAssetGroup(ASSETS.characters, ASSET_PATHS.characters),
-    loadAssetGroup(ASSETS.gestures, ASSET_PATHS.gestures),
+    loadAssetGroup(ASSETS.items, ASSET_PATHS.items),
     loadAssetGroup(ASSETS.illustrations, ASSET_PATHS.illustrations),
+    loadAssetGroup(ASSETS.gestures, ASSET_PATHS.gestures),
   ]);
 }
 
@@ -1082,6 +1148,7 @@ const STAGES = [
 const CUTSCENE_INTRO = [
   {speaker:'📖', text:'옛날 옛적, 마왕은 세상의 모든 키보드와 마우스를 가져가 버렸습니다.'},
   {speaker:'📖', text:'공주를 납치한 마왕에게 맞서 싸울 용사의 무기를 없애버리기 위함이었죠.'},
+  {speaker:'📖', text:'이제 남은 것은 대화창을 넘기는 데 사용할 ▷(화살표) 하나뿐입니다.'},
   {speaker:'📖', text:'하지만 마왕은 한 가지를 간과했습니다. 이 나라의 용사 과무칸은 원래 말이 없고 과묵하며, 오직 손짓 하나로 모든 것을 해결하는 사나이였다는 사실을요.'},
   {speaker:'👑 왕', text:'오, 이 나라의 용사, 과무칸이여! 마왕에게 납치된 공주를 구출해주시오!'},
   {speaker:'⚔️ 과무칸', text:'...', waitGesture:'ok_sign'},
@@ -1135,6 +1202,123 @@ const CUTSCENE_ENDING = [
   {speaker:'👑 왕', text:'하하하! 승리의 v로구만. 과연 과무칸 용사로구나! 자네의 그 손짓을 이 왕국의 영원한 기록으로 남기겠소! 만세!!'},
   {speaker:'🎉 THE END', text:'말 없는 용사 과무칸, 세계를 구하다.'},
 ];
+
+// ─── BGM MANAGER ─────────────────────────────────────────────────────────────
+const BGM_PATHS = {
+  audience_chamber: './assets/bgm/01_audience_chamber.mp3',
+  grassland:        './assets/bgm/02_grassland.mp3',
+  forest:           './assets/bgm/03_forest.mp3',
+  cave:             './assets/bgm/04_cave.mp3',
+  demon_castle:     './assets/bgm/05_demon_castle.mp3',
+  demon_throne:     './assets/bgm/06_demon_throne.mp3',
+  game_clear:       './assets/bgm/07_game_clear.mp3',
+};
+
+// 스테이지 인덱스 → BGM
+const STAGE_BGM = [
+  BGM_PATHS.grassland,
+  BGM_PATHS.forest,
+  BGM_PATHS.cave,
+  BGM_PATHS.demon_castle,
+  BGM_PATHS.demon_throne,
+];
+
+const BGM = (() => {
+  let _audio = null;
+  let _src   = null;
+
+  function play(src, loop = true) {
+    if (_src === src && _audio && !_audio.paused) return;
+    stop();
+    _audio = new Audio(src);
+    _audio.loop = loop;
+    _audio.volume = 0.45;
+    _audio.play().catch(() => {});
+    _src = src;
+  }
+
+  function stop() {
+    if (_audio) { _audio.pause(); _audio.currentTime = 0; }
+    _audio = null; _src = null;
+  }
+
+  function fadeOut(ms = 1200) {
+    if (!_audio) return;
+    const a = _audio;
+    _audio = null; _src = null;
+    const tick = 50;
+    const step = a.volume / (ms / tick);
+    const id = setInterval(() => {
+      if (a.volume > step) { a.volume = Math.max(0, a.volume - step); }
+      else { a.pause(); clearInterval(id); }
+    }, tick);
+  }
+
+  return { play, stop, fadeOut };
+})();
+
+// ─── SFX ─────────────────────────────────────────────────────────────────────
+const SFX_PATHS = {
+  warningNotice:  './assets/sfx/sfx-warning-notice.mp3',
+  click01:        './assets/sfx/sfx-click-01.mp3',
+  click02:        './assets/sfx/sfx-click-02.mp3',
+  titleTheme:     './assets/sfx/sfx-title-theme.mp3',
+  textTyping:     './assets/sfx/sfx-text-typing.mp3',
+  gestureSuccess: './assets/sfx/sfx-gesture/sfx-gesture-success.mp3',
+  gestureFail:    './assets/sfx/sfx-gesture/sfx-gesture-fail.mp3',
+  monster: {
+    slime:     './assets/sfx/sfx-monster/sfx-slime-appear.mp3',
+    goblin:    './assets/sfx/sfx-monster/sfx-goblin-appear.mp3',
+    orc:       './assets/sfx/sfx-monster/sfx-orc-appear.mp3',
+    demon:     './assets/sfx/sfx-monster/sfx-demon-guard-appear.mp3',
+    demonlord: './assets/sfx/sfx-monster/sfx-demon-king-appear.mp3',
+  },
+};
+const SFX = (() => {
+  let _typingAudio = null;
+  let _typingCounter = 0;
+
+  function play(src, volume = 0.5) {
+    const a = new Audio(src);
+    a.volume = volume;
+    a.play().catch(() => {});
+    return a;
+  }
+
+  function playTyping() {
+    _typingCounter = (_typingCounter + 1) % 3;
+    if (_typingCounter !== 0) return; // 프레임당 0.33회 (3프레임마다 1회)
+    if (!_typingAudio) {
+      _typingAudio = new Audio(SFX_PATHS.textTyping);
+      _typingAudio.volume = 0.25;
+      _typingAudio.ontimeupdate = function () {
+        if (_typingAudio.duration && _typingAudio.currentTime >= _typingAudio.duration / 2) {
+          _typingAudio.pause();
+        }
+      };
+    }
+    _typingAudio.currentTime = 0;
+    _typingAudio.play().catch(() => {});
+  }
+
+  function playMonster(enemy) {
+    const src = SFX_PATHS.monster[enemy];
+    if (!src) return;
+    const a = play(src);
+    if (enemy === 'slime') {
+      setTimeout(() => {
+        const tick = 50, dur = 400;
+        const step = a.volume / (dur / tick);
+        const id = setInterval(() => {
+          if (a.volume > step) { a.volume = Math.max(0, a.volume - step); }
+          else { a.pause(); clearInterval(id); }
+        }, tick);
+      }, 2000);
+    }
+  }
+
+  return { play, playTyping, playMonster };
+})();
 
 // ─── GAME STATE ──────────────────────────────────────────────────────────────
 const GS = {
@@ -1469,6 +1653,17 @@ function drawBg_throne(ctx, w, h) {
   ctx.fillStyle='rgba(249,115,22,0.15)'; ctx.fillRect(w/2-60,0,120,h*0.7);
 }
 
+// 마왕 왕좌 배경은 항상 좌우반전
+function drawBgMaybeFlipped(bgType) {
+  if (bgType === 'demonlord_throne_room') {
+    ctx.save(); ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
+    drawBackground(bgType);
+    ctx.restore();
+  } else {
+    drawBackground(bgType);
+  }
+}
+
 function drawBackground(bgType) {
   const w=canvas.width, h=canvas.height;
   const bgImg = ASSETS.backgrounds[bgType];
@@ -1486,14 +1681,19 @@ function drawBackground(bgType) {
   }
 }
 
-function drawThroneRoomBg(bgType='royal_throne_room') {
+function drawThroneRoomBg(bgType='royal_throne_room', areaH=null) {
+  const w = canvas.width;
+  const ah = areaH || canvas.height;
   const bgImg = ASSETS.backgrounds[bgType];
   if (bgImg) {
-    drawImageCover(ctx, bgImg, canvas.width, canvas.height);
+    const scale = Math.max(w / bgImg.naturalWidth, ah / bgImg.naturalHeight);
+    const dw = bgImg.naturalWidth * scale;
+    const dh = bgImg.naturalHeight * scale;
+    ctx.drawImage(bgImg, (w - dw) / 2, (ah - dh) / 2, dw, dh);
     return;
   }
-  // For cutscenes, use the throne-like room
-  const w=canvas.width, h=canvas.height;
+  // 폴백 절차적 렌더
+  const h = ah;
   ctx.fillStyle='#1a0a0e'; ctx.fillRect(0,0,w,h);
   // Floor
   ctx.fillStyle='#2d1b0e';
@@ -1516,145 +1716,15 @@ function drawThroneRoomBg(bgType='royal_throne_room') {
 }
 
 // ─── GROUND LINE ─────────────────────────────────────────────────────────────
-function getGroundYFrac(bgType) {
-  switch(bgType){
-    case 'meadow': return 0.72;
-    case 'forest': return 0.78;
-    case 'cave':   return 0.82;
-    case 'demon_castle': return 0.78;
-    case 'demonlord_throne_room': return 0.80;
-    default:       return 0.73;
-  }
-}
 function getGroundY(bgType) {
-  return canvas.height * getGroundYFrac(bgType);
-}
-
-// ─── CUTSCENE SCENE CONFIG ────────────────────────────────────────────────────
-// 현재 컷씬 타입·라인 번호로부터 배경 + 등장 캐릭터 설정을 반환
-function getCutsceneSceneConfig(cutsceneType, lineIdx) {
-  const lines = getCutsceneLines(cutsceneType);
-  const line = lines[lineIdx] || (lines.length > 0 ? lines[0] : null);
-  const speaker = line ? (line.speaker || '') : '';
-
-  // 인트로 / 엔딩 : 왕좌 방 + 왕 + 용사 (용사만 yOff)
-  if (cutsceneType === 'intro') {
-    return {
-      bgType: 'royal_throne_room',
-      charLeft:  {key:'king', sprite:SPRITES.king_idle, scale:1.5, flipX:false},
-      charRight: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:true,  yOff:25},
-    };
-  }
-  if (cutsceneType === 'ending') {
-    return {
-      bgType: 'royal_throne_room',
-      flipBg: true,
-      charLeft:  {key:'hero',     sprite:SPRITES.hero_idle,     scale:1.5, flipX:false, yOff:25},
-      charLeft2: {key:'princess', sprite:SPRITES.princess_idle, scale:1.5, flipX:false, yOff:25},
-      charRight: {key:'king',     sprite:SPRITES.king_idle,     scale:1.5, flipX:true},
-    };
-  }
-
-  // 보스 격파 컷씬 : 마왕이 말할 때 → 마왕, 그 외 → 공주 (공주·마왕·용사 모두 내림)
-  if (cutsceneType === 'boss_defeat') {
-    const showDemonlord = speaker.includes('마왕') || speaker.includes('👿');
-    return {
-      bgType: 'demonlord_throne_room',
-      flipBg: true,
-      charLeft: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:false, yOff:43},
-      charRight: showDemonlord
-        ? {key:'demonlord', sprite:SPRITES.demonlord_idle, scale:2.0, flipX:true, yOff:30}
-        : {key:'princess',  sprite:SPRITES.princess_idle,  scale:1.5, flipX:true, yOff:30},
-    };
-  }
-
-  // 스테이지 컷씬 : 해당 스테이지 배경 + 캐릭터
-  if (cutsceneType && cutsceneType.startsWith('stage_')) {
-    const si = parseInt(cutsceneType.split('_')[1]) - 1;
-    const stage = STAGES[si];
-    if (!stage) return {bgType:'meadow', charLeft:null, charRight:null};
-    const eScale = stage.enemy==='demonlord' ? 2.0
-                 : (stage.enemy==='orc' || stage.enemy==='demon') ? 1.8 : 1.5;
-    const eKey = stage.enemy === 'slime' ? 'slime_1' : stage.enemy;
-
-    // 초원(meadow): 둘 다 위로, 마왕 스테이지: 좌우 스왑 + 내림, 나머지: 기본
-    if (si === 0) { // meadow
-      return {
-        bgType: stage.bgType,
-        charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:-2},
-        charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:-10},
-      };
-    }
-    if (si === 4) { // demonlord 스테이지: 마왕 좌측(왕좌), 용사 우측
-      return {
-        bgType: stage.bgType,
-        flipBg: true,
-        charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:43},
-        charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:30},
-      };
-    }
-    // stage 2~4
-    return {
-      bgType: stage.bgType,
-      charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:33},
-      charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:25},
-    };
-  }
-
-  return {bgType:'meadow', charLeft:null, charRight:null};
-}
-
-// ─── CUTSCENE SCENE RENDERER ─────────────────────────────────────────────────
-// 캔버스 상단 areaH 픽셀 안에 배경 + 캐릭터를 그린다
-function drawCutsceneSceneArea(config, areaH) {
-  const w = canvas.width;
-  const {bgType, charLeft, charLeft2, charRight, charRight2, flipBg} = config;
-
-  // 배경 이미지를 areaH 영역에 맞춰 cover 방식으로 렌더
-  const bgImg = ASSETS.backgrounds[bgType];
-  if (flipBg) { ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1); }
-  if (bgImg) {
-    const scale = Math.max(w / bgImg.naturalWidth, areaH / bgImg.naturalHeight);
-    const dw = bgImg.naturalWidth  * scale;
-    const dh = bgImg.naturalHeight * scale;
-    ctx.drawImage(bgImg, (w - dw) / 2, (areaH - dh) / 2, dw, dh);
-  } else {
-    drawBackground(bgType); // 폴백 (clip 범위 안에서만 렌더됨)
-  }
-  if (flipBg) ctx.restore();
-
-  // areaH 기준 지면 Y
-  const groundY = areaH * getGroundYFrac(bgType);
-
-  if (charLeft) {
-    const sp = charLeft.sprite;
-    const sc = (charLeft.scale || 1.5) * CHARACTER_RENDER_SCALE;
-    const cw = sp.w * PIXEL * sc;
-    const ch = sp.h * PIXEL * sc;
-    const cx = w * 0.22 - cw / 2;
-    const cy = groundY - ch + (charLeft.yOff || 0);
-    drawCharacterSprite(ctx, charLeft.key, sp, cx, cy, sc, charLeft.flipX || false);
-  }
-  if (charLeft2) {
-    const sp = charLeft2.sprite;
-    const sc = (charLeft2.scale || 1.5) * CHARACTER_RENDER_SCALE;
-    const cw = sp.w * PIXEL * sc;
-    const ch = sp.h * PIXEL * sc;
-    drawCharacterSprite(ctx, charLeft2.key, sp, w * 0.37 - cw / 2, groundY - ch + (charLeft2.yOff || 0), sc, charLeft2.flipX || false);
-  }
-  if (charRight) {
-    const sp = charRight.sprite;
-    const sc = (charRight.scale || 1.5) * CHARACTER_RENDER_SCALE;
-    const cw = sp.w * PIXEL * sc;
-    const ch = sp.h * PIXEL * sc;
-    drawCharacterSprite(ctx, charRight.key, sp, w * 0.75 - cw / 2, groundY - ch + (charRight.yOff || 0), sc, charRight.flipX || false);
-  }
-  if (charRight2) {
-    const sp = charRight2.sprite;
-    const sc = (charRight2.scale || 1.5) * CHARACTER_RENDER_SCALE;
-    const cw = sp.w * PIXEL * sc;
-    const ch = sp.h * PIXEL * sc;
-    drawCharacterSprite(ctx, charRight2.key, sp, w * 0.63 - cw / 2, groundY - ch + (charRight2.yOff || 0), sc, charRight2.flipX || false);
+  const h = canvas.height;
+  switch(bgType){
+    case 'meadow': return h*0.62;
+    case 'forest': return h*0.72;
+    case 'cave':   return h*0.76;
+    case 'demon_castle': return h*0.70;
+    case 'demonlord_throne_room': return h*0.73;
+    default:       return h*0.65;
   }
 }
 
@@ -1691,22 +1761,10 @@ function drawBattleScene(stage, timestamp) {
   const heroScale = 1.5 * CHARACTER_RENDER_SCALE;
   const heroW = heroSprite.w * PIXEL * heroScale;
   const heroH = heroSprite.h * PIXEL * heroScale;
-  const isMeadow = stage.bgType === 'meadow';
-  const isDemonlordBattle = stage.enemy === 'demonlord';
-
-  // 씬별 Y 오프셋
-  const heroYOff  = isMeadow ? -10 : 35;
-  const enemyYOff = isMeadow ? -10 : (isDemonlordBattle ? 30 : 25);
-
-  // 마왕 전투: 좌측에 마왕(왕좌), 우측에 용사
-  const baseHeroX  = w * 0.15;  // 용사 항상 좌측
-  const baseEnemyX = w * 0.65;  // 적 항상 우측
-  const heroFlipX  = false;
-  const enemyFlipX = true;
-
+  const baseHeroX = w * 0.15;
   const hx = baseHeroX + GS.heroOffsetX;
-  const hy = groundY - heroH + heroYOff + GS.heroOffsetY + Math.sin(GS.idleWobble * Math.PI * 2) * 3;
-  drawCharacterSprite(ctx, heroCharacterKey, heroSprite, hx, hy, heroScale, heroFlipX, false);
+  const hy = groundY - heroH + 95 + GS.heroOffsetY + Math.sin(GS.idleWobble * Math.PI * 2) * 3;
+  drawCharacterSprite(ctx, heroCharacterKey, heroSprite, hx, hy, heroScale, false, false);
 
   // Enemy
   const enemySprite = getEnemySprite(stage.enemy);
@@ -1716,19 +1774,37 @@ function drawBattleScene(stage, timestamp) {
                    : 1.5) * CHARACTER_RENDER_SCALE;
   const enemyW = enemySprite.w * PIXEL * enemyScale;
   const enemyH = enemySprite.h * PIXEL * enemyScale;
+  const baseEnemyX = w * 0.65;
   const ex = baseEnemyX + GS.enemyOffsetX;
-  const ey = groundY - enemyH + enemyYOff + GS.enemyOffsetY + Math.sin((GS.idleWobble + 0.5) * Math.PI * 2) * 2;
-  const enemyRect = drawCharacterSprite(ctx, enemyCharacterKey, enemySprite, ex, ey, enemyScale, enemyFlipX, GS.enemyFlash);
+  const ey = groundY - enemyH + 75 + GS.enemyOffsetY + Math.sin((GS.idleWobble + 0.5) * Math.PI * 2) * 2;
+
+  // 마왕 스테이지: 키보드·마우스 아이템을 마왕 등 뒤(우측) 발치에 배치
+  if (stage.enemy === 'demonlord') {
+    const kmImg = ASSETS.items && ASSETS.items.keyboardmouse;
+    if (kmImg) {
+      const kmSize = 80;
+      ctx.drawImage(kmImg, ex + enemyW * 0.35, groundY - kmSize * 0.55, kmSize, kmSize);
+    }
+  }
+
+  const enemyRect = drawCharacterSprite(ctx, enemyCharacterKey, enemySprite, ex, ey, enemyScale, true, GS.enemyFlash);
 
   // HP bars
   drawEnemyHpBar(enemyRect.x, enemyRect.y-20, enemyRect.w, stage);
 }
 
-function drawThroneScene(charLeft, charRight, bgType='royal_throne_room') {
+function drawThroneScene(charLeft, charRight, bgType='royal_throne_room', flipBg=false, areaH=null) {
   // charLeft/Right: {key, sprite, scale, flipX}
   const w=canvas.width, h=canvas.height;
-  drawThroneRoomBg(bgType);
-  const groundY = h * 0.80;
+  const ah = areaH || h;
+  if (flipBg) {
+    ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1);
+    drawThroneRoomBg(bgType, ah);
+    ctx.restore();
+  } else {
+    drawThroneRoomBg(bgType, ah);
+  }
+  const groundY = ah * 0.73;
 
   if (charLeft) {
     const sp = charLeft.sprite;
@@ -1743,6 +1819,125 @@ function drawThroneScene(charLeft, charRight, bgType='royal_throne_room') {
     const cw = sp.w * PIXEL * sc;
     const ch = sp.h * PIXEL * sc;
     drawCharacterSprite(ctx, charRight.key, sp, w*0.7 - cw/2, groundY - ch, sc, charRight.flipX||false);
+  }
+}
+
+// ─── CUTSCENE SCENE CONFIG + RENDERER ────────────────────────────────────────
+function getGroundYFrac(bgType) {
+  switch(bgType){
+    case 'meadow':               return 0.72;
+    case 'forest':               return 0.78;
+    case 'cave':                 return 0.82;
+    case 'demon_castle':         return 0.78;
+    case 'demonlord_throne_room':return 0.80;
+    default:                     return 0.73;
+  }
+}
+
+function getCutsceneSceneConfig(cutsceneType, lineIdx) {
+  const lines = getCutsceneLines(cutsceneType);
+  const line = lines[lineIdx] || (lines.length > 0 ? lines[0] : null);
+  const speaker = line ? (line.speaker || '') : '';
+
+  if (cutsceneType === 'intro') {
+    return {
+      bgType: 'royal_throne_room',
+      charLeft:  {key:'king', sprite:SPRITES.king_idle, scale:1.5, flipX:false},
+      charRight: {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:true, yOff:25},
+    };
+  }
+  if (cutsceneType === 'ending') {
+    return {
+      bgType: 'royal_throne_room',
+      charLeft:  {key:'king',     sprite:SPRITES.king_idle,     scale:1.5, flipX:false},
+      charRight2:{key:'princess', sprite:SPRITES.princess_idle, scale:1.5, flipX:true, yOff:25},
+      charRight: {key:'hero',     sprite:SPRITES.hero_idle,     scale:1.5, flipX:true, yOff:25},
+    };
+  }
+  if (cutsceneType === 'boss_defeat') {
+    const showDemonlord = speaker.includes('마왕') || speaker.includes('👿');
+    return {
+      bgType: 'demonlord_throne_room',
+      flipBg: true,
+      charLeft:  {key:'hero', sprite:SPRITES.hero_idle, scale:1.5, flipX:false, yOff:43},
+      charRight: showDemonlord
+        ? {key:'demonlord', sprite:SPRITES.demonlord_idle, scale:2.0, flipX:true, yOff:30}
+        : {key:'princess',  sprite:SPRITES.princess_idle,  scale:1.5, flipX:true, yOff:30},
+    };
+  }
+  if (cutsceneType && cutsceneType.startsWith('stage_')) {
+    const si = parseInt(cutsceneType.split('_')[1]) - 1;
+    const stage = STAGES[si];
+    if (!stage) return {bgType:'meadow', charLeft:null, charRight:null};
+    const eScale = stage.enemy==='demonlord' ? 2.0
+                 : (stage.enemy==='orc' || stage.enemy==='demon') ? 1.8 : 1.5;
+    const eKey = stage.enemy === 'slime' ? 'slime_1' : stage.enemy;
+    if (si === 0) {
+      return {
+        bgType: stage.bgType,
+        charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:-2},
+        charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:-10},
+      };
+    }
+    if (si === 4) {
+      return {
+        bgType: stage.bgType,
+        flipBg: true,
+        charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:43},
+        charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:30},
+      };
+    }
+    return {
+      bgType: stage.bgType,
+      charLeft:  {key:'hero', sprite:SPRITES.hero_idle,           scale:1.5,   flipX:false, yOff:33},
+      charRight: {key:eKey,   sprite:getEnemySprite(stage.enemy), scale:eScale, flipX:true,  yOff:25},
+    };
+  }
+  return {bgType:'meadow', charLeft:null, charRight:null};
+}
+
+function drawCutsceneSceneArea(config, areaH) {
+  const w = canvas.width;
+  const {bgType, charLeft, charLeft2, charRight, charRight2, flipBg} = config;
+
+  // 배경: areaH 높이에 맞춰 cover 방식으로 스케일
+  const bgImg = ASSETS.backgrounds[bgType];
+  if (flipBg) { ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1); }
+  if (bgImg) {
+    const scale = Math.max(w / bgImg.naturalWidth, areaH / bgImg.naturalHeight);
+    const dw = bgImg.naturalWidth  * scale;
+    const dh = bgImg.naturalHeight * scale;
+    ctx.drawImage(bgImg, (w - dw) / 2, (areaH - dh) / 2, dw, dh);
+  } else {
+    drawBackground(bgType);
+  }
+  if (flipBg) ctx.restore();
+
+  const groundY = areaH * getGroundYFrac(bgType);
+
+  if (charLeft) {
+    const sp = charLeft.sprite;
+    const sc = (charLeft.scale || 1.5) * CHARACTER_RENDER_SCALE;
+    const cw = sp.w * PIXEL * sc, ch = sp.h * PIXEL * sc;
+    drawCharacterSprite(ctx, charLeft.key, sp, w*0.22 - cw/2, groundY - ch + (charLeft.yOff||0), sc, charLeft.flipX||false);
+  }
+  if (charLeft2) {
+    const sp = charLeft2.sprite;
+    const sc = (charLeft2.scale || 1.5) * CHARACTER_RENDER_SCALE;
+    const cw = sp.w * PIXEL * sc, ch = sp.h * PIXEL * sc;
+    drawCharacterSprite(ctx, charLeft2.key, sp, w*0.37 - cw/2, groundY - ch + (charLeft2.yOff||0), sc, charLeft2.flipX||false);
+  }
+  if (charRight) {
+    const sp = charRight.sprite;
+    const sc = (charRight.scale || 1.5) * CHARACTER_RENDER_SCALE;
+    const cw = sp.w * PIXEL * sc, ch = sp.h * PIXEL * sc;
+    drawCharacterSprite(ctx, charRight.key, sp, w*0.75 - cw/2, groundY - ch + (charRight.yOff||0), sc, charRight.flipX||false);
+  }
+  if (charRight2) {
+    const sp = charRight2.sprite;
+    const sc = (charRight2.scale || 1.5) * CHARACTER_RENDER_SCALE;
+    const cw = sp.w * PIXEL * sc, ch = sp.h * PIXEL * sc;
+    drawCharacterSprite(ctx, charRight2.key, sp, w*0.63 - cw/2, groundY - ch + (charRight2.yOff||0), sc, charRight2.flipX||false);
   }
 }
 
@@ -1854,10 +2049,8 @@ function classifyGesture(landmarks) {
   }
 
   // 엄지 방향 판정
-  const thumbUpY   = lm[4].y < lm[3].y - 0.04 && lm[4].y < lm[2].y - 0.04; // 엄지 끝이 IP·MCP보다 확실히 위쪽 (👍 판정용)
+  const thumbExt   = lm[4].x > lm[3].x; // 엄지를 옆으로 뻗음 (👍 판정용)
   const thumbDown  = lm[4].y > lm[2].y + 0.05; // 엄지 끝이 뿌리보다 확실히 아래 (👎 판정용)
-  const thumbIndexDist = Math.hypot(lm[4].x - lm[5].x, lm[4].y - lm[5].y); // 엄지 끝 ↔ 검지 뿌리 거리
-  const thumbMidDist   = Math.hypot(lm[4].x - lm[9].x, lm[4].y - lm[9].y); // 엄지 끝 ↔ 중지 뿌리 거리
 
   const idxExt   = ext(8,  5);
   const midExt   = ext(12, 9);
@@ -1872,11 +2065,12 @@ function classifyGesture(landmarks) {
   // ⑦ thumb_down (👎) [새로 추가] - 엄지 아래로 + 나머지 접힘
   if (thumbDown && !idxExt && !midExt && !rngExt && !pkyExt) return 'thumb_down';
   
-  // ② thumb_up (👍) - 엄지 끝이 확실히 위쪽 + 나머지 접힘 + 검지 뿌리와 거리 확보
-  if (thumbUpY && thumbIndexDist > 0.12 && !idxExt && !midExt && !rngExt && !pkyExt) return 'thumb_up';
+  // ② thumb_up (👍) - 엄지 뻗음 + 나머지 접힘
+  if (thumbExt && !idxExt && !midExt && !rngExt && !pkyExt) return 'thumb_up';
 
-  // ③ fist (✊) - 나머지 4손가락 접힘 + 엄지 끝이 검지(5) 또는 중지(9) 뿌리 근처에 근접
-  if (!idxExt && !midExt && !rngExt && !pkyExt && (thumbIndexDist < 0.12 || thumbMidDist < 0.12)) return 'fist';
+
+  // ③ fist (✊) - 나머지 4손가락 접힘 (엄지 조건들에 안 걸렸을 때 최종 주먹)
+  if (!idxExt && !midExt && !rngExt && !pkyExt) return 'fist';
 
   // ④ open_hand (✋)
   if (idxExt && midExt && rngExt && pkyExt) return 'open_hand';
@@ -1995,6 +2189,7 @@ function retryBattle() {
   GS.feedbackTimer = 0;
   GS.flashAlpha = 0;
   GS.bossPhase = 0;
+  BGM.play(STAGE_BGM[GS.stageIdx]);
   startBattle();
 }
 
@@ -2025,6 +2220,13 @@ function startCutscene(type) {
   GS.cutsceneType = type;
   GS.cutsceneLine = 0;
   GS.waitingGesture = null;
+  // BGM
+  if (type === 'intro') {
+    BGM.play(BGM_PATHS.audience_chamber);
+  } else if (type === 'ending') {
+    BGM.play(BGM_PATHS.game_clear);
+  }
+  // boss_defeat·stage_N: 이미 재생 중인 BGM 유지
   GS.inputLocked = false;
   showDialogLine(type, 0);
 }
@@ -2059,6 +2261,7 @@ function showDialogLine(type, idx) {
   db.classList.add('visible');
   document.getElementById('dialog-speaker').textContent = line.speaker || '';
   document.getElementById('dialog-text').textContent = '';
+  // 초상화
   const portraitKey = getSpeakerPortraitKey(line.speaker || '');
   const portraitEl = document.getElementById('dialog-portrait');
   const portraitImg = ASSETS.illustrations && ASSETS.illustrations[portraitKey];
@@ -2121,6 +2324,7 @@ function handleAdvanceInput() {
     }
     if (line && line.waitGesture) return; // must gesture
     // Advance
+    SFX.play(SFX_PATHS.click02);
     showDialogLine(GS.cutsceneType, GS.cutsceneLine + 1);
   } else if (GS.phase === 'stage_title') {
     startStageCutscene(GS.stageIdx);
@@ -2132,6 +2336,7 @@ function handleAdvanceInput() {
 function startStageTitle(idx) {
   GS.stageIdx = idx;
   GS.phase = 'stage_title';
+  BGM.play(STAGE_BGM[idx]);
   const stage = STAGES[idx];
   const sto = document.getElementById('stage-title-overlay');
   document.getElementById('stage-title-text').textContent = `${stage.name}: ${stage.location}`;
@@ -2167,6 +2372,7 @@ function startBattle() {
   GS.heroOffsetX = 0; GS.heroOffsetY = 0;
   GS.bossPhase = 0;
   GS.currentSequence = generateSequence(stage);
+  SFX.playMonster(stage.enemy);
 }
 
 function nextStage() {
@@ -2192,6 +2398,7 @@ function showStageClear() {
 }
 
 function showGameOver() {
+  BGM.fadeOut(1500);
   GS.phase = 'gameover';
   GS.gameOverVisible = true;
   document.getElementById('gameover-overlay').classList.add('visible');
@@ -2227,6 +2434,7 @@ function processBeat(timestamp) {
 
   if (actual === expected) {
     // HIT
+    SFX.play(SFX_PATHS.gestureSuccess);
     GS.combo++;
     const multiplier = Math.min(GS.combo, 5);
     GS.score += 100 * multiplier;
@@ -2243,12 +2451,14 @@ function processBeat(timestamp) {
     const isCrit = GS.combo >= 5;
     showFeedback(isCrit ? '⚡ PERFECT!!' : GS.combo>=3 ? '🔥 GOOD!' : 'HIT!', isCrit?'#ffd700':'#4ade80');
     if (GS.enemyHp <= 0) {
+      if (STAGES[GS.stageIdx].enemy === 'demonlord') BGM.fadeOut(2500);
       setTimeout(showStageClear, 600);
       GS.phase = 'battle_ending';
       return;
     }
   } else {
     // MISS
+    SFX.play(SFX_PATHS.gestureFail, 0.8);
     GS.combo = 0;
     GS.heroHp--;
     GS.heroAnimState = 'hurt';
@@ -2300,12 +2510,14 @@ function gameLoop(timestamp) {
   // Typewriter
   if (GS.phase === 'cutscene' && GS.typewriterIdx < GS.typewriterFull.length) {
     GS.typewriterTimer += dt;
+    const prevTypeIdx = GS.typewriterIdx;
     while (GS.typewriterTimer > 35 && GS.typewriterIdx < GS.typewriterFull.length) {
       GS.typewriterTimer -= 35;
       GS.typewriterIdx++;
       GS.typewriterText = GS.typewriterFull.substring(0, GS.typewriterIdx);
       document.getElementById('dialog-text').textContent = GS.typewriterText;
     }
+    if (GS.typewriterIdx > prevTypeIdx) SFX.playTyping();
   }
 
   // Waiting gesture check (cutscene)
@@ -2353,35 +2565,35 @@ function gameLoop(timestamp) {
 
   if (GS.phase === 'cutscene' || GS.phase === 'credits') {
     const w = canvas.width, h = canvas.height;
-    const sceneH = Math.floor(h * 0.70); // 상단 70%만 씬 영역으로 사용
+    const sceneH = Math.floor(h * 0.70);
     const sceneConfig = getCutsceneSceneConfig(GS.cutsceneType, GS.cutsceneLine);
 
-    // 씬 영역(상단 70%)에 배경 + 캐릭터 렌더 (하단 dialog-box 영역은 CSS가 덮음)
+    // 씬 영역(상단 70%)에 배경+캐릭터 렌더 — clip으로 다이얼로그 영역 침범 방지
     ctx.save();
     ctx.beginPath(); ctx.rect(0, 0, w, sceneH); ctx.clip();
     drawCutsceneSceneArea(sceneConfig, sceneH);
     ctx.restore();
 
-    // Credits 오버레이
+    // Credits 오버레이 (씬 영역 안에서만)
     if (GS.phase === 'credits') {
       ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.fillRect(0, 0, w, sceneH);
       ctx.fillStyle='#ffd700';
       ctx.font='20px "Press Start 2P"';
       ctx.textAlign='center';
-      ctx.fillText('🎉 THE END 🎉', w/2, sceneH*0.40);
-      ctx.font='10px "Press Start 2P"';
+      ctx.fillText('🎉 THE END 🎉', w/2, sceneH*0.38);
+      ctx.font='13px "DungGeunMo", monospace';
       ctx.fillStyle='#fff';
-      ctx.fillText('용사가 말을 숨김', w/2, sceneH*0.55);
+      ctx.fillText('제스처 RPG: 용사가 무기를 뺏김', w/2, sceneH*0.56);
       ctx.fillStyle='rgba(255,255,255,0.5)';
       ctx.font='8px "Press Start 2P"';
-      ctx.fillText(`FINAL SCORE: ${GS.score}`, w/2, sceneH*0.68);
+      ctx.fillText(`FINAL SCORE: ${GS.score}`, w/2, sceneH*0.70);
       ctx.fillStyle='rgba(255,255,255,0.3)';
       ctx.font='7px "Press Start 2P"';
-      ctx.fillText('F5 키로 다시 시작', w/2, sceneH*0.82);
+      ctx.fillText('→ 키로 다시 시작', w/2, sceneH*0.84);
       ctx.textAlign='left';
     }
   } else if (GS.phase === 'stage_title') {
-    drawBackground(STAGES[GS.stageIdx].bgType);
+    drawBgMaybeFlipped(STAGES[GS.stageIdx].bgType);
   } else if (GS.phase === 'battle' || GS.phase === 'battle_ending') {
     const stage = STAGES[GS.stageIdx];
     drawBattleScene(stage, timestamp);
@@ -2394,9 +2606,9 @@ function gameLoop(timestamp) {
       ctx.fillRect(canvas.width-4,0,4,canvas.height);
     }
   } else if (GS.phase === 'stage_clear') {
-    drawBackground(STAGES[GS.stageIdx].bgType);
+    drawBgMaybeFlipped(STAGES[GS.stageIdx].bgType);
   } else if (GS.phase === 'gameover') {
-    drawBackground(STAGES[GS.stageIdx].bgType);
+    drawBgMaybeFlipped(STAGES[GS.stageIdx].bgType);
   } else if (GS.phase === 'loading') {
     const w=canvas.width, h=canvas.height;
     ctx.fillStyle='#0a0a0f'; ctx.fillRect(0,0,w,h);
@@ -2415,13 +2627,14 @@ function gameLoop(timestamp) {
   requestAnimationFrame(gameLoop);
 }
 
-// ─── CERTIFICATE ──────────────────────────────────────────────────────────────
+// ─── CERTIFICATE (이 부분을 정확히 교체하세요) ──────────────────────────────────
 let certDataUrl = null;
-let userName = "과무칸";
+let userName = "과무칸"; // 전역 변수로 선언
+
 
 
 function captureAndShowCert() {
-  // 이름 입력 (그리기 전에 userName 확정)
+  // 이름 입력
   const input = window.prompt("전설의 기록에 남길 용사님의 이름을 입력하세요:", userName);
   if (input && input.trim() !== "") {
     userName = input.trim().substring(0, 8);
@@ -2460,12 +2673,12 @@ function captureAndShowCert() {
   cc.textAlign='center';
   cc.fillStyle='#ffd700';
   cc.shadowBlur=14; cc.shadowColor='#ffd700';
-  cc.font='11px "Press Start 2P"';
-  cc.fillText('용사가 말을 숨김', W/2, 40);
+  cc.font='14px "DungGeunMo", monospace';
+  cc.fillText('제스처 RPG: 용사가 무기를 뺏김', W/2, 38);
   cc.shadowBlur=0;
   cc.fillStyle='rgba(255,255,255,0.55)';
   cc.font='7px "Press Start 2P"';
-  cc.fillText('CLEAR CERTIFICATE', W/2, 57);
+  cc.fillText('CLEAR CERTIFICATE', W/2, 54);
 
   // --- 웹캠 사진 (미러) ---
   const pW=210, pH=158, pX=(W-pW)/2, pY=68;
@@ -2483,35 +2696,28 @@ function captureAndShowCert() {
   const timeStr = `${String(now.getFullYear())}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}  ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
   cc.fillStyle='#fff';
-  cc.font='10px "Press Start 2P"';
-  cc.fillText(`과묵한 용사 ${userName}`, W/2, pY+pH+22);
+  cc.font='12px "DungGeunMo", monospace';
+  cc.fillText(`과묵한 용사 ${userName}`, W/2, pY+pH+24);
 
   cc.fillStyle='rgba(255,255,255,0.65)';
-  cc.font='7px "Press Start 2P"';
-  cc.fillText('공주를 구하고 세계를 되찾다!', W/2, pY+pH+40);
+  cc.font='11px "DungGeunMo", monospace';
+  cc.fillText('무기 없이 마왕을 물리쳤다!', W/2, pY+pH+44);
 
   cc.fillStyle='#ffd700';
   cc.font='8px "Press Start 2P"';
-  cc.fillText(`SCORE: ${GS.score}`, W/2, pY+pH+58);
+  cc.fillText(`SCORE: ${GS.score}`, W/2, pY+pH+64);
 
-  cc.fillStyle='rgba(255,215,0,0.28)';
-  cc.font='6px "Press Start 2P"';
-  cc.fillText(timeStr, W/2, pY+pH+75);
+  cc.fillStyle='rgba(255,215,0,0.6)';
+  cc.font='7px "Press Start 2P"';
+  cc.fillText(timeStr, W/2, pY+pH+82);
 
   cc.fillStyle='rgba(255,255,255,0.3)';
   cc.font='6px "Press Start 2P"';
-  cc.fillText('✌ THE SILENT HERO ✌', W/2, H-18);
+  cc.fillText('✌ THE SILENT HERO ✌', W/2, H-20);
 
   cc.textAlign='left';
 
   certDataUrl = certCanvas.toDataURL('image/png');
-
-  // localStorage 저장
-  try {
-    localStorage.setItem('hero_cert_img', certDataUrl);
-    localStorage.setItem('hero_cert_score', String(GS.score));
-    localStorage.setItem('hero_cert_time', timeStr);
-  } catch(e){}
 
   document.getElementById('cert-overlay').classList.add('visible');
 }
@@ -2530,28 +2736,8 @@ function restartFromCert() {
   restartGame();
 }
 
-// #view-cert 해시 라우팅 — QR 스캔 후 같은 기기에서 열 때
-// 인증서 모드이면 true 반환 (게임 init 중단)
-function checkCertView() {
-  if (window.location.hash !== '#view-cert') return false;
-  const img = localStorage.getItem('hero_cert_img');
-  const score = localStorage.getItem('hero_cert_score') || '';
-  const time = localStorage.getItem('hero_cert_time') || '';
-  if (!img) return false;
-  document.body.innerHTML = `
-    <div style="background:#080818;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:'Press Start 2P',monospace;padding:20px;box-sizing:border-box;">
-      <div style="color:#ffd700;font-size:16px;text-shadow:0 0 20px #ffd700;">🏆 클리어 인증서</div>
-      <img src="${img}" style="max-width:90vw;max-height:65vh;border:3px solid #ffd700;box-shadow:0 0 30px rgba(255,215,0,0.5);">
-      <div style="color:#fff;font-size:10px;text-align:center;">과묵한 용사 ${userName}<br><span style="color:rgba(255,255,255,0.5);font-size:8px;">${time} · SCORE ${score}</span></div>
-      <a href="${img}" download="과묵한용사_${userName}_클리어인증서.png" style="color:#4ade80;font-size:10px;text-decoration:none;border:2px solid #4ade80;padding:10px 18px;">📥 저장하기</a>
-      <div style="color:rgba(255,255,255,0.3);font-size:7px;">용사가 말을 숨김</div>
-    </div>`;
-  return true;
-}
-
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
-  if (checkCertView()) return; // QR 스캔 후 인증서 보기 모드
   GS.phase = 'loading';
   requestAnimationFrame(gameLoop);
   await loadAssets();
@@ -2561,7 +2747,40 @@ async function init() {
   }, 1500);
 }
 
-init();
+// 오른쪽 화살표 키로 화면 전환
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'ArrowRight') return;
+  const warning = document.getElementById('warning-overlay');
+  const title   = document.getElementById('title-overlay');
+  if (warning.style.display !== 'none') {
+    SFX.play(SFX_PATHS.click01);
+    warning.style.display = 'none';
+    title.style.display = 'flex';
+    SFX.play(SFX_PATHS.titleTheme);
+  } else if (title.style.display !== 'none') {
+    SFX.play(SFX_PATHS.click01);
+    title.style.display = 'none';
+    init();
+  }
+});
+
+// 주의사항 화면 — 첫 클릭으로 오디오 언락 + warning notice 재생
+(function () {
+  let audioUnlocked = false;
+  const warningEl = document.getElementById('warning-overlay');
+  const hintEl    = document.getElementById('warning-click-hint');
+
+  function onWarningClick() {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    warningEl.removeEventListener('click', onWarningClick);
+
+    SFX.play(SFX_PATHS.warningNotice);
+    hintEl.textContent = '[ → 키를 눌러 다음으로 ]';
+  }
+
+  warningEl.addEventListener('click', onWarningClick);
+}());
 </script>
 </body>
 </html>
